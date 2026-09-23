@@ -14,11 +14,11 @@
     <style>
         :root {
             --primary-color: #27408B;
-            --secondary-color: #000000;
-            --bg-color: #f4f6f9;
+            --secondary-color: #111111;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #333333;
-            --arduino-card-bg: #f3e8ff;
+            --text-color: #334155;
+            --arduino-card-bg: #faf5ff;
         }
 
         * {
@@ -31,28 +31,29 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
+            font-size: 0.92rem; /* Reduz a escala geral levemente para ficar menos agressivo */
+            line-height: 1.5;
         }
 
-        /* CABEÇALHO */
+        /* CABEÇALHO COMPACTO */
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 0.6rem 2.5rem;
+            padding: 0.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 4px solid var(--secondary-color);
-            overflow: hidden;
+            border-bottom: 3px solid var(--secondary-color);
         }
 
         header h1 {
-            font-size: 1.6rem;
+            font-size: 1.3rem;
+            font-weight: 600;
         }
 
         .header-logo {
-            height: 75px;
-            width: 75px;
+            height: 55px;
+            width: 55px;
             border-radius: 50%;
             background-color: white;
             padding: 2px;
@@ -60,26 +61,27 @@
         }
 
         .alert-banner {
-            background-color: #fff3cd;
-            color: #856404;
-            border-bottom: 1px solid #ffeeba;
+            background-color: #fef9c3;
+            color: #854d0e;
+            border-bottom: 1px solid #fef08a;
             text-align: center;
-            padding: 0.75rem;
-            font-weight: bold;
-            font-size: 0.95rem;
+            padding: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
         main {
             width: 100%;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 1.2rem auto;
+            padding: 0 1.5rem;
         }
 
-        /* LAYOUT DE 3 COLUNAS */
+        /* LAYOUT DE 3 COLUNAS EQUILIBRADO */
         .content-layout {
             display: grid;
-            grid-template-columns: 320px 1fr 320px;
-            gap: 1.5rem;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 1.2rem;
             align-items: stretch;
         }
 
@@ -92,15 +94,16 @@
         .column-side {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.2rem;
         }
 
+        /* CARTÕES PADRÃO COMPACTOS */
         .info-card {
             background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--primary-color); /* Borda padrão garantida em todos */
+            padding: 1.1rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border-top: 3px solid var(--primary-color);
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -109,31 +112,33 @@
 
         .info-card h3 {
             color: var(--primary-color);
-            font-size: 1.1rem;
-            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
         }
 
         .info-value {
-            font-size: 0.95rem;
-            color: #333;
-            margin: 0.4rem 0;
+            font-size: 0.88rem;
+            color: #475569;
+            margin: 0.25rem 0;
             display: flex;
             justify-content: space-between;
-            padding: 0 0.5rem;
+            padding: 0 0.3rem;
         }
 
         .astro-icon {
-            font-size: 2.2rem;
-            margin-bottom: 0.4rem;
+            font-size: 1.6rem;
+            margin-bottom: 0.2rem;
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU */
+        /* CARD DO ARDUINO / ITAMARAJU ENXUTO */
         .arduino-card {
             background: var(--arduino-card-bg);
-            border: 2px solid var(--primary-color);
-            padding: 2.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(157, 0, 255, 0.15);
+            border: 1px solid #d8b4fe;
+            border-top: 3px solid #9333ea;
+            padding: 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(147, 51, 234, 0.08);
             text-align: center;
             height: 100%;
             display: flex;
@@ -142,12 +147,19 @@
         }
 
         .arduino-card h2 {
-            color: var(--primary-color);
-            margin-bottom: 0.4rem;
-            font-size: 1.4rem;
+            color: #7e22ce;
+            margin-bottom: 0.2rem;
+            font-size: 1.15rem;
         }
 
-        /* PESQUISA E AUTOCOMPLETE */
+        .temp-arduino {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0.3rem 0;
+        }
+
+        /* PESQUISA COMPACTA */
         .search-box-wrapper {
             position: relative;
             flex: 1;
@@ -155,105 +167,109 @@
 
         .search-box {
             background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 1rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             display: flex;
-            gap: 10px;
-            margin-bottom: 2rem;
+            gap: 8px;
+            margin-bottom: 1.2rem;
             position: relative;
         }
 
         .search-box input {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #cbd5e1;
             border-radius: 4px;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .search-box button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1.2rem;
             border-radius: 4px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
         }
 
         .search-box button:hover {
-            background-color: #1c2e66;
+            background-color: #1d306b;
         }
 
         .suggestions-list {
             position: absolute;
             top: 100%;
-            left: 1.5rem;
-            right: 130px;
+            left: 1rem;
+            right: 110px;
             background: white;
-            border: 1px solid #ccc;
+            border: 1px solid #cbd5e1;
             border-top: none;
             border-radius: 0 0 4px 4px;
-            max-height: 180px;
+            max-height: 150px;
             overflow-y: auto;
             z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .suggestion-item {
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 0.8rem;
             cursor: pointer;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.88rem;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .suggestion-item:hover {
-            background-color: #e2e8f0;
+            background-color: #f8fafc;
         }
 
         .weather-card {
             background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-top: 3px solid var(--primary-color);
         }
 
         .weather-card h2 {
             color: var(--primary-color);
-            margin-bottom: 0.5rem;
+            font-size: 1.15rem;
+            margin-bottom: 0.3rem;
         }
 
         .temp {
-            font-size: 4rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            margin: 0.5rem 0;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0.3rem 0;
         }
 
         .details {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 2.5rem;
-            margin-top: 1.5rem;
-            font-size: 1.15rem;
-            color: #555;
+            gap: 2rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #475569;
         }
 
+        /* PREVISÃO DE 5 DIAS MAIS COMPACTA */
         .forecast-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 2.5rem;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
         }
 
         @media (max-width: 768px) {
             .forecast-container {
-                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             }
             .suggestions-list {
                 right: 1rem;
@@ -263,72 +279,69 @@
 
         .forecast-card {
             background: var(--card-bg);
-            padding: 1.2rem;
-            border-radius: 8px;
+            padding: 0.8rem;
+            border-radius: 6px;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border-top: 2px solid var(--primary-color);
+            font-size: 0.85rem;
         }
 
         .forecast-card h4 {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             color: var(--primary-color);
+            font-size: 0.9rem;
         }
 
+        /* SEÇÃO DE NOTÍCIAS ENXUTA */
         .news-section {
             background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-top: 3rem;
-            border-top: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            margin-top: 2rem;
+            border-top: 3px solid var(--primary-color);
         }
 
         .news-section h2 {
             color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
         }
 
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
         }
 
         .news-item {
-            background: #fdfdfd;
+            background: #ffffff;
             border: 1px solid #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 6px;
+            padding: 1rem;
+            border-radius: 5px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s;
-        }
-
-        .news-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .news-item h4 {
-            font-size: 1.05rem;
-            color: #222;
-            margin-bottom: 0.5rem;
+            font-size: 0.92rem;
+            color: #1e293b;
+            margin-bottom: 0.3rem;
         }
 
         .news-item p {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 1rem;
+            font-size: 0.82rem;
+            color: #64748b;
+            margin-bottom: 0.6rem;
         }
 
         .news-item a {
             color: var(--primary-color);
-            font-weight: bold;
+            font-weight: 600;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             align-self: flex-start;
         }
 
@@ -338,23 +351,25 @@
 
         footer {
             text-align: center;
-            padding: 1.5rem;
-            margin-top: 3rem;
+            padding: 1rem;
+            margin-top: 2rem;
             background-color: #e2e8f0;
-            color: #666;
-            font-size: 0.9rem;
+            color: #64748b;
+            font-size: 0.82rem;
         }
 
         .error-msg {
-            color: #d32f2f;
-            margin-top: 1rem;
-            font-weight: bold;
+            color: #dc2626;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            font-size: 0.88rem;
         }
 
         .section-title {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             color: var(--primary-color);
-            font-size: 1.3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -380,9 +395,9 @@
                 <div class="info-card">
                     <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
                     <h3>Fase da Lua</h3>
-                    <div class="info-value" style="justify-content: center; font-size: 1.1rem; font-weight: bold;" id="itamarajuMoonPhase">Carregando...</div>
-                    <div class="info-value" style="justify-content: center; margin-top: 8px; color: #555;" id="itamarajuMoonFullDays">--</div>
-                    <div class="info-value" style="justify-content: center; font-size: 0.85rem; color: #666; margin-top: 6px;" id="itamarajuNextPhases">--</div>
+                    <div class="info-value" style="justify-content: center; font-size: 0.95rem; font-weight: 600;" id="itamarajuMoonPhase">Carregando...</div>
+                    <div class="info-value" style="justify-content: center; margin-top: 4px; color: #64748b; font-size: 0.82rem;" id="itamarajuMoonFullDays">--</div>
+                    <div class="info-value" style="justify-content: center; font-size: 0.8rem; color: #64748b; margin-top: 4px;" id="itamarajuNextPhases">--</div>
                 </div>
 
                 <!-- 7. CARD DE MARÉS -->
@@ -391,7 +406,7 @@
                     <h3>Informações Marítimas</h3>
                     <div class="info-value"><span>Preamar (Alta):</span> <strong id="tideHigh">04:15 / 16:40</strong></div>
                     <div class="info-value"><span>Baixa-mar:</span> <strong id="tideLow">10:25 / 22:50</strong></div>
-                    <div class="info-value" style="font-size: 0.85rem; color: #555; margin-top: 8px; justify-content: center;">Estado: <strong>Normal / Estável</strong></div>
+                    <div class="info-value" style="font-size: 0.8rem; color: #64748b; margin-top: 4px; justify-content: center;">Estado: <strong>Normal / Estável</strong></div>
                 </div>
             </div>
 
@@ -399,16 +414,16 @@
             <div>
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-                    <p style="font-size: 0.95rem; color: #666; margin-bottom: 1.2rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.8rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
                     
-                    <div class="temp" id="arduinoTemp">--°C</div>
+                    <div class="temp-arduino" id="arduinoTemp">--°C</div>
                     
-                    <div class="details">
+                    <div class="details" style="gap: 1.5rem; margin-top: 0.5rem;">
                         <div>Umidade: <strong id="arduinoHumidity">--%</strong></div>
                         <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
                     </div>
 
-                    <p id="arduinoStatus" style="font-size: 0.9rem; color: #d32f2f; margin-top: 30px; font-weight: bold;">
+                    <p id="arduinoStatus" style="font-size: 0.82rem; color: #dc2626; margin-top: 15px; font-weight: 600;">
                         ⚠️ Arduino desconectado. Aguardando envio de dados...
                     </p>
                 </section>
@@ -416,17 +431,17 @@
 
             <!-- COLUNA DIREITA: INFORMAÇÕES DO DIA E NOITE -->
             <div class="column-side">
-                <!-- 4. INFORMAÇÕES DO DIA E NOITE (COM BORDAS E ESPAÇAMENTOS CORRIGIDOS) -->
+                <!-- 4. INFORMAÇÕES DO DIA E NOITE -->
                 <div class="info-card">
                     <div class="astro-icon">☀️ 🌙</div>
                     <h3>Informações do Dia e Noite</h3>
-                    <div style="text-align: left; margin-top: 4px; font-size: 0.9rem;">
-                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 6px;">☀️ Sol</p>
+                    <div style="text-align: left; margin-top: 2px; font-size: 0.85rem;">
+                        <p style="font-weight: 600; color: var(--primary-color); border-bottom: 1px solid #f1f5f9; padding-bottom: 2px; margin-bottom: 4px;">☀️ Sol</p>
                         <div class="info-value"><span>Nascer:</span> <strong id="itamarajuSunrise">--:--</strong></div>
                         <div class="info-value"><span>Zênite:</span> <strong id="itamarajuSunZenith">--:--</strong></div>
                         <div class="info-value"><span>Pôr do Sol:</span> <strong id="itamarajuSunset">--:--</strong></div>
                         
-                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 4px; margin-top: 12px; margin-bottom: 6px;">🌙 Lua</p>
+                        <p style="font-weight: 600; color: var(--primary-color); border-bottom: 1px solid #f1f5f9; padding-bottom: 2px; margin-top: 8px; margin-bottom: 4px;">🌙 Lua</p>
                         <div class="info-value"><span>Nascer da Lua:</span> <strong id="moonriseTime">--:--</strong></div>
                         <div class="info-value"><span>Culminação:</span> <strong id="moonZenithTime">--:--</strong></div>
                         <div class="info-value"><span>Ocaso da Lua:</span> <strong id="moonsetTime">--:--</strong></div>
@@ -437,10 +452,10 @@
         </div>
 
         <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
-        <h3 class="section-title" style="margin-top: 3rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
+        <h3 class="section-title" style="margin-top: 2rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
         <div class="forecast-container" id="itamarajuForecastContainer"></div>
 
-        <hr style="margin: 2.5rem 0; border: none; border-top: 1px dashed #ccc;">
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e2e8f0;">
 
         <!-- CAMPO DE PESQUISA COM AUTOCOMPLETE -->
         <h3 class="section-title">🔎 Consultar Outras Cidades</h3>
@@ -458,12 +473,12 @@
         <div class="weather-card" id="currentWeather">
             <h2 id="cityName">Porto Seguro - Bahia</h2>
             <div class="temp" id="currentTemp">--°C</div>
-            <p id="currentCondition">Carregando...</p>
+            <p id="currentCondition" style="color: #64748b; font-size: 0.9rem;">Carregando...</p>
             <div class="details">
                 <div>Umidade: <strong id="currentHumidity">--%</strong></div>
                 <div>Vento: <strong id="currentWind">-- km/h</strong></div>
             </div>
-            <div style="margin-top: 1.2rem; font-size: 0.95rem; color: #555;">
+            <div style="margin-top: 0.8rem; font-size: 0.88rem; color: #64748b;">
                 ☀️ Nascer do sol: <strong id="searchSunrise">--:--</strong> | 🌇 Pôr do sol: <strong id="searchSunset">--:--</strong>
             </div>
         </div>
@@ -524,7 +539,7 @@
                     document.getElementById('arduinoWind').innerText = (leitura.vento !== undefined && leitura.vento !== null) ? `${leitura.vento} km/h` : '-- km/h';
                     
                     if (statusElem) {
-                        statusElem.style.color = '#2e7d32';
+                        statusElem.style.color = '#15803d';
                         statusElem.innerText = `🟢 Conectado - Última leitura: ${new Date().toLocaleTimeString('pt-BR')}`;
                     }
                 } else {
@@ -541,7 +556,7 @@
             document.getElementById('arduinoWind').innerText = '-- km/h';
             const statusElem = document.getElementById('arduinoStatus');
             if (statusElem) {
-                statusElem.style.color = '#d32f2f';
+                statusElem.style.color = '#dc2626';
                 statusElem.innerText = mensagem;
             }
         }
@@ -563,9 +578,9 @@
                 card.className = 'forecast-card';
                 card.innerHTML = `
                     <h4>${dateFormatted}</h4>
-                    <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
-                    <p style="font-size: 0.8rem; color: #1e88e5; font-weight: bold;">🌧️ ${probChuva}% chuva</p>
-                    <p>Máx: <strong>${max}°C</strong></p>
+                    <p style="font-size: 0.78rem; margin-bottom: 4px; color: #475569;">${cond}</p>
+                    <p style="font-size: 0.78rem; color: #0284c7; font-weight: 600;">🌧️ ${probChuva}% chuva</p>
+                    <p style="margin-top: 4px;">Máx: <strong>${max}°C</strong></p>
                     <p>Mín: <strong>${min}°C</strong></p>
                 `;
                 container.appendChild(card);
@@ -628,14 +643,14 @@
             let phaseIndex = Math.round(jd * 8) & 7;
 
             const fases = [
-                { nome: "Lua Nova", icone: "🌑", proxima: "Crescente Côncava 🌒" },
-                { nome: "Lua Crescente Côncava", icone: "🌒", proxima: "Quarto Crescente 🌓" },
+                { nome: "Lua Nova", icone: "🌑", proxima: "Crescente 🌒" },
+                { nome: "Crescente Côncava", icone: "🌒", proxima: "Quarto Crescente 🌓" },
                 { nome: "Quarto Crescente", icone: "🌓", proxima: "Crescente Gibosa 🌔" },
-                { nome: "Lua Crescente Gibosa", icone: "🌔", proxima: "Lua Cheia 🌕" },
+                { nome: "Crescente Gibosa", icone: "🌔", proxima: "Lua Cheia 🌕" },
                 { nome: "Lua Cheia", icone: "🌕", proxima: "Minguante Gibosa 🌖" },
-                { nome: "Lua Minguante Gibosa", icone: "🌖", proxima: "Quarto Minguante 🌗" },
+                { nome: "Minguante Gibosa", icone: "🌖", proxima: "Quarto Minguante 🌗" },
                 { nome: "Quarto Minguante", icone: "🌗", proxima: "Minguante Côncava 🌘" },
-                { nome: "Lua Minguante Côncava", icone: "🌘", proxima: "Lua Nova 🌑" }
+                { nome: "Minguante Côncava", icone: "🌘", proxima: "Lua Nova 🌑" }
             ];
 
             let diasParaCheia = Math.round(14.76 - phaseVal);
@@ -643,16 +658,16 @@
             if (diasParaCheia === 0) {
                 textoCheia = "🌕 É Lua Cheia hoje!";
             } else if (diasParaCheia > 0) {
-                textoCheia = `Faltam ${diasParaCheia} dias para a Lua Cheia`;
+                textoCheia = `Faltam ${diasParaCheia} dias para a Cheia`;
             } else {
                 let diasProximaCheia = Math.round(29.53 - phaseVal);
-                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Lua Cheia`;
+                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Cheia`;
             }
 
             document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;
             document.getElementById('itamarajuMoonIcon').innerText = fases[phaseIndex].icone;
             document.getElementById('itamarajuMoonFullDays').innerText = textoCheia;
-            document.getElementById('itamarajuNextPhases').innerText = `Próxima fase: ${fases[phaseIndex].proxima}`;
+            document.getElementById('itamarajuNextPhases').innerText = `Próxima: ${fases[phaseIndex].proxima}`;
 
             let moonriseH = (6 + Math.round(phaseVal * 0.8)) % 24;
             let moonzenH = (moonriseH + 6) % 24;
@@ -789,11 +804,11 @@
                         count++;
                     }
                 } else {
-                    newsContainer.innerHTML = `<p style="color: #666; grid-column: span 2; text-align: center;">Não foi possível carregar as notícias no momento.</p>`;
+                    newsContainer.innerHTML = `<p style="color: #64748b; grid-column: span 2; text-align: center;">Não foi possível carregar as notícias no momento.</p>`;
                 }
             } catch (err) {
                 console.error("Erro ao carregar notícias:", err);
-                newsContainer.innerHTML = `<p style="color: #666; grid-column: span 2; text-align: center;">Erro de conexão ao buscar o feed de notícias.</p>`;
+                newsContainer.innerHTML = `<p style="color: #64748b; grid-column: span 2; text-align: center;">Erro de conexão ao buscar o feed de notícias.</p>`;
             }
         }
 

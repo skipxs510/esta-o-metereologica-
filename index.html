@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site metereologico Escola Crescer</title>
+    <title>Site meteorológico Escola Crescer</title>
+
+    <!-- 1. Importação da Biblioteca do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --primary-color: #9D00FF; /* Roxo */
-            --secondary-color: #000000; /* Branco*/
+            --secondary-color: #000000; /* Preto */
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #333333;
+            --arduino-card-bg: #f3e8ff; /* Roxo claro em destaque */
         }
 
         * {
@@ -56,6 +61,22 @@
             max-width: 900px;
             margin: 2rem auto;
             padding: 0 1rem;
+        }
+
+        /* CARD DA ESTAÇÃO ARDUINO EM DESTAQUE */
+        .arduino-card {
+            background: var(--arduino-card-bg);
+            border: 2px solid var(--primary-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(157, 0, 255, 0.15);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .arduino-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
         }
 
         .search-box {
@@ -115,6 +136,7 @@
         .details {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 2rem;
             margin-top: 1.5rem;
             font-size: 1.1rem;
@@ -160,7 +182,7 @@
 <body>
 
     <header>
-        <h1>Site metereologico Escola Crescer</h1>
+        <h1>Site meteorológico Escola Crescer</h1>
     </header>
 
     <div class="alert-banner">
@@ -168,6 +190,17 @@
     </div>
 
     <main>
+        <!-- SEÇÃO EM DESTAQUE: DADOS DO ARDUINO (SUPABASE) -->
+        <section class="arduino-card">
+            <h2>📡 Estação Meteorológica Local (Escola Crescer)</h2>
+            <p style="font-size: 0.9rem; color: #666;">Dados coletados em tempo real via Arduino</p>
+            
+            <div class="temp" id="arduinoTemp">--°C</div>
+            <p id="arduinoStatus" style="font-size: 0.8rem; color: #777; margin-top: 15px;">Aguardando leitura do Supabase...</p>
+        </section>
+
+        <!-- PESQUISA DE OUTRAS CIDADES (API OPEN-METEO) -->
+        <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Consultar Outras Cidades</h3>
         <div class="search-box">
             <input type="text" id="cityInput" placeholder="Digite o nome da cidade (Ex: São Paulo, Rio de Janeiro)..." value="São Paulo">
             <button onclick="getWeatherData()">Pesquisar</button>
@@ -192,10 +225,51 @@
     </main>
 
     <footer>
-        <p>Projeto Front-end Educacional - Inspirado nas diretrizes do Instituto Nacional de Meteorologia.</p>
+        <p>Projeto Front-end Educacional - Escola Crescer & Arduino IoT</p>
     </footer>
 
     <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO E INTEGRAÇÃO COM SUPABASE
+        // ==========================================
+        const SUPABASE_URL = 'https://klnuljixtmixfrzgpzmv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_06gMLuRxhQh4Z_z6jb1Bdg_dWXSx3Du';
+        
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function buscarDadosArduino() {
+            try {
+                // Busca o último registro inserido na tabela 'Leituras'
+                const { data, error } = await _supabase
+                    .from('Leituras')
+                    .select('*')
+                    .order('id', { ascending: false })
+                    .limit(1);
+
+                if (error) {
+                    console.error('Erro no Supabase:', error);
+                    document.getElementById('arduinoStatus').innerText = 'Erro ao conectar ao Supabase.';
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    const leitura = data[0];
+                    document.getElementById('arduinoTemp').innerText = `${leitura.temperatura}°C`;
+                    
+                    const horaAtual = new Date().toLocaleTimeString();
+                    document.getElementById('arduinoStatus').innerText = `Última atualização: ${horaAtual}`;
+                } else {
+                    document.getElementById('arduinoStatus').innerText = 'Nenhum dado encontrado na tabela Leituras.';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+
+        // ==========================================
+        // 2. BUSCA DE DADOS DE CIDADES (OPEN-METEO)
+        // ==========================================
         async function getWeatherData() {
             const cityName = document.getElementById('cityInput').value.trim();
             const errorArea = document.getElementById('errorArea');
@@ -207,7 +281,6 @@
             }
 
             try {
-                // 1. Busca coordenadas da cidade usando a API de geocodificação do Open-Meteo
                 const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
                 const geoData = await geoResponse.json();
 
@@ -219,20 +292,15 @@
                 const location = geoData.results[0];
                 const { latitude, longitude, name, admin1, country } = location;
 
-                // 2. Busca os dados de clima usando latitude e longitude
                 const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,time&timezone=auto`);
                 const weatherData = await weatherResponse.json();
 
-                // Atualiza o card principal
                 document.getElementById('cityName').innerText = `${name} - ${admin1 || ''} (${country || ''})`;
                 document.getElementById('currentTemp').innerText = `${weatherData.current.temperature_2m}°C`;
                 document.getElementById('currentHumidity').innerText = `${weatherData.current.relative_humidity_2m}%`;
                 document.getElementById('currentWind').innerText = `${weatherData.current.wind_speed_10m} km/h`;
-                
-                // Traduz código do clima básico
                 document.getElementById('currentCondition').innerText = getWeatherDescription(weatherData.current.weather_code);
 
-                // Preenche a previsão dos próximos dias
                 const forecastContainer = document.getElementById('forecastContainer');
                 forecastContainer.innerHTML = '';
 
@@ -241,8 +309,6 @@
                     const maxTemp = weatherData.daily.temperature_2m_max[i];
                     const minTemp = weatherData.daily.temperature_2m_min[i];
                     const code = weatherData.daily.weather_code[i];
-
-                    // Formata a data (YYYY-MM-DD para DD/MM)
                     const formattedDate = dateStr.split('-').reverse().slice(0, 2).join('/');
 
                     const card = document.createElement('div');
@@ -262,26 +328,29 @@
             }
         }
 
-        // Função auxiliar para traduzir códigos numéricos do clima
         function getWeatherDescription(code) {
             const weatherCodes = {
-                0: 'Céu limpo ',
-                1: 'Principalmente limpo ',
-                2: 'Parcialmente nublado ',
-                3: 'Nublado ',
-                45: 'Nevoeiro ',
-                51: 'Chuvisco leve ',
-                61: 'Chuva leve ',
-                63: 'Chuva moderada ',
-                80: 'Pancadas de chuva ',
-                95: 'Tempestade '
+                0: 'Céu limpo',
+                1: 'Principalmente limpo',
+                2: 'Parcialmente nublado',
+                3: 'Nublado',
+                45: 'Nevoeiro',
+                51: 'Chuvisco leve',
+                61: 'Chuva leve',
+                63: 'Chuva moderada',
+                80: 'Pancadas de chuva',
+                95: 'Tempestade'
             };
             return weatherCodes[code] || 'Condição estável';
         }
 
-        // Carrega São Paulo automaticamente ao abrir a página
+        // Executa ao carregar a página
         window.onload = () => {
-            getWeatherData();
+            buscarDadosArduino(); // Busca no Supabase
+            getWeatherData();     // Busca na API pública
+
+            // Atualiza o Arduino a cada 5 segundos automaticamente
+            setInterval(buscarDadosArduino, 5000);
         };
     </script>
 </body>

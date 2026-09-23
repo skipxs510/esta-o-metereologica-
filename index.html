@@ -13,7 +13,7 @@
 
     <style>
         :root {
-            --primary-color: #9D00FF; /* Roxo */
+            --primary-color: #27408B; /* Roxo */
             --secondary-color: #000000; /* Preto */
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
@@ -37,7 +37,7 @@
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -49,6 +49,15 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        /* ESTILO DA LOGO NO CABEÇALHO */
+        .header-logo {
+            height: 50px;
+            width: auto;
+            border-radius: 50%; /* Mantém o formato circular da imagem */
+            background-color: white;
+            padding: 2px;
         }
 
         .alert-banner {
@@ -186,6 +195,8 @@
 
     <header>
         <h1>Site meteorológico Escola Crescer</h1>
+        <!-- LOGO NO CANTO SUPERIOR DIREITO -->
+        <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
     </header>
 
     <div class="alert-banner">

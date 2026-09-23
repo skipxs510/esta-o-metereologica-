@@ -239,7 +239,7 @@
 
         async function buscarDadosArduino() {
             try {
-                // Busca o último registro inserido na tabela 'Leituras'
+                // Consulta a tabela 'Leituras' ordenando por ID para pegar a última medição
                 const { data, error } = await _supabase
                     .from('Leituras')
                     .select('*')
@@ -254,18 +254,23 @@
 
                 if (data && data.length > 0) {
                     const leitura = data[0];
-                    document.getElementById('arduinoTemp').innerText = `${leitura.temperatura}°C`;
                     
-                    const horaAtual = new Date().toLocaleTimeString();
+                    // Exibe o valor da coluna 'temperatura'
+                    if (leitura.temperatura !== undefined && leitura.temperatura !== null) {
+                        document.getElementById('arduinoTemp').innerText = `${leitura.temperatura}°C`;
+                    } else {
+                        document.getElementById('arduinoTemp').innerText = `--°C`;
+                    }
+
+                    const horaAtual = new Date().toLocaleTimeString('pt-BR');
                     document.getElementById('arduinoStatus').innerText = `Última atualização: ${horaAtual}`;
                 } else {
                     document.getElementById('arduinoStatus').innerText = 'Nenhum dado encontrado na tabela Leituras.';
                 }
             } catch (err) {
-                console.error(err);
+                console.error('Erro inesperado:', err);
             }
         }
-
 
         // ==========================================
         // 2. BUSCA DE DADOS DE CIDADES (OPEN-METEO)
@@ -349,7 +354,7 @@
             buscarDadosArduino(); // Busca no Supabase
             getWeatherData();     // Busca na API pública
 
-            // Atualiza o Arduino a cada 5 segundos automaticamente
+            // Atualiza o card do Supabase a cada 5 segundos automaticamente
             setInterval(buscarDadosArduino, 5000);
         };
     </script>

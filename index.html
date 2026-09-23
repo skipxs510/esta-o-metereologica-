@@ -92,6 +92,12 @@
             margin-bottom: 0.5rem;
         }
 
+        /* CAMPO DE PESQUISA COM SUGESTÕES (AUTOCOMPLETE) */
+        .search-box-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
         .search-box {
             background: var(--card-bg);
             padding: 1.5rem;
@@ -103,7 +109,7 @@
         }
 
         .search-box input {
-            flex: 1;
+            width: 100%;
             padding: 0.75rem;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -122,7 +128,36 @@
         }
 
         .search-box button:hover {
-            background-color: #7b00c7;
+            background-color: #1c2e66;
+        }
+
+        /* LISTA DE SUGESTÕES DE CIDADES */
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f3e8ff;
+            color: var(--primary-color);
         }
 
         .weather-card {
@@ -204,10 +239,10 @@
     </div>
 
     <main>
-        <!-- 1. CIDADE FIXA: ITAMARAJU / ARDUINO -->
+        <!-- 1. CIDADE FIXA: ITAMARAJU / ARDUINO (EXCLUSIVO SUPABASE) -->
         <section class="arduino-card">
             <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-            <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição em Tempo Real)</p>
+            <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição Arduino / Supabase)</p>
             
             <div class="temp" id="arduinoTemp">--°C</div>
             
@@ -216,13 +251,16 @@
                 <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
             </div>
 
-            <p id="arduinoStatus" style="font-size: 0.8rem; color: #777; margin-top: 15px;">Atualizando dados...</p>
+            <p id="arduinoStatus" style="font-size: 0.8rem; color: #777; margin-top: 15px;">Aguardando dados do Arduino...</p>
         </section>
 
-        <!-- 2. CAMPO DE PESQUISA PARA OUTRAS CIDADES -->
+        <!-- 2. CAMPO DE PESQUISA PARA OUTRAS CIDADES (COM SUGESTÕES) -->
         <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Consultar Outras Cidades</h3>
         <div class="search-box">
-            <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Salvador, Teixeira de Freitas, Rio de Janeiro)..." value="Salvador">
+            <div class="search-box-wrapper">
+                <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Salvador, Teixeira de Freitas)..." autocomplete="off" value="Salvador">
+                <div id="suggestions" class="suggestions-list"></div>
+            </div>
             <button onclick="getWeatherData()">Pesquisar</button>
         </div>
 
@@ -257,7 +295,7 @@
         const SUPABASE_KEY = 'sb_publishable_06gMLuRxhQh4Z_z6jb1Bdg_dWXSx3Du';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Busca dados do Arduino / Supabase para Itamaraju
+        // Busca APENAS dados gravados pelo Arduino na tabela 'Leituras'
         async function buscarDadosItamaraju() {
             try {
                 const { data, error } = await _supabase
@@ -268,45 +306,72 @@
 
                 if (!error && data && data.length > 0) {
                     const leitura = data[0];
-                    if (leitura.temperatura !== undefined) document.getElementById('arduinoTemp').innerText = `${leitura.temperatura}°C`;
-                    if (leitura.umidade !== undefined) document.getElementById('arduinoHumidity').innerText = `${leitura.umidade}%`;
-                    if (leitura.vento !== undefined) document.getElementById('arduinoWind').innerText = `${leitura.vento} km/h`;
+
+                    document.getElementById('arduinoTemp').innerText = (leitura.temperatura !== undefined && leitura.temperatura !== null) ? `${leitura.temperatura}°C` : '--°C';
+                    document.getElementById('arduinoHumidity').innerText = (leitura.umidade !== undefined && leitura.umidade !== null) ? `${leitura.umidade}%` : '--%';
+                    document.getElementById('arduinoWind').innerText = (leitura.vento !== undefined && leitura.vento !== null) ? `${leitura.vento} km/h` : '-- km/h';
                     
                     const horaAtual = new Date().toLocaleTimeString('pt-BR');
                     document.getElementById('arduinoStatus').innerText = `Última atualização do Arduino: ${horaAtual}`;
                 } else {
-                    // Caso o Arduino ainda não envie umidade/vento, busca na API Pública para completar Itamaraju
-                    buscarItamarajuOpenMeteo();
+                    document.getElementById('arduinoStatus').innerText = 'Aguardando envio de dados do Arduino...';
                 }
             } catch (err) {
-                buscarItamarajuOpenMeteo();
+                console.error('Erro ao conectar ao Supabase:', err);
+                document.getElementById('arduinoStatus').innerText = 'Erro ao carregar dados do Arduino.';
             }
         }
 
-        // Caso o Arduino forneça apenas a temperatura, a API traz os dados meteorológicos padrão de Itamaraju
-        async function buscarItamarajuOpenMeteo() {
+        // ==========================================
+        // BUSCA E SUGESTÃO DE CIDADES (OPEN-METEO)
+        // ==========================================
+        let selectedLat = null;
+        let selectedLon = null;
+
+        // Função para buscar lista de sugestões enquanto digita
+        async function fetchCitySuggestions(query) {
+            const suggestionsBox = document.getElementById('suggestions');
+            if (!query || query.length < 1) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
             try {
-                // Coordenadas fixas de Itamaraju - BA
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=-17.0397&longitude=-39.5311&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto`);
-                const data = await res.json();
-                
-                if (document.getElementById('arduinoTemp').innerText === '--°C') {
-                    document.getElementById('arduinoTemp').innerText = `${data.current.temperature_2m}°C`;
+                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=pt&format=json`);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    suggestionsBox.innerHTML = '';
+                    data.results.forEach(city => {
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        const nameFormatted = `${city.name}${city.admin1 ? ', ' + city.admin1 : ''} (${city.country || ''})`;
+                        item.innerText = nameFormatted;
+                        
+                        item.onclick = () => {
+                            document.getElementById('cityInput').value = city.name;
+                            selectedLat = city.latitude;
+                            selectedLon = city.longitude;
+                            suggestionsBox.style.display = 'none';
+                            getWeatherData(city.name, city.latitude, city.longitude, nameFormatted);
+                        };
+                        
+                        suggestionsBox.appendChild(item);
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
                 }
-                document.getElementById('arduinoHumidity').innerText = `${data.current.relative_humidity_2m}%`;
-                document.getElementById('arduinoWind').innerText = `${data.current.wind_speed_10m} km/h`;
-                document.getElementById('arduinoStatus').innerText = `Dados integrados Open-Meteo (Itamaraju)`;
-            } catch (e) {
-                console.error("Erro ao buscar dados locais de Itamaraju:", e);
+            } catch (err) {
+                console.error('Erro ao buscar sugestões:', err);
             }
         }
 
-        // ==========================================
-        // BUSCA DE OUTRAS CIDADES (OPEN-METEO)
-        // ==========================================
-        async function getWeatherData() {
-            const cityName = document.getElementById('cityInput').value.trim();
+        // Função para buscar clima da cidade
+        async function getWeatherData(cityNameParam, latParam, lonParam, fullNameParam) {
+            const cityName = cityNameParam || document.getElementById('cityInput').value.trim();
             const errorArea = document.getElementById('errorArea');
+            document.getElementById('suggestions').style.display = 'none';
             errorArea.innerText = '';
 
             if (!cityName) {
@@ -315,30 +380,37 @@
             }
 
             try {
-                // Busca a geolocalização (latitude/longitude) da cidade pesquisada
-                const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
-                const geoData = await geoResponse.json();
+                let latitude = latParam;
+                let longitude = lonParam;
+                let displayName = fullNameParam;
 
-                if (!geoData.results || geoData.results.length === 0) {
-                    errorArea.innerText = 'Cidade não encontrada. Tente novamente.';
-                    return;
+                // Se não tiver coordenadas (pesquisa direta pelo botão), realiza a busca
+                if (!latitude || !longitude) {
+                    const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
+                    const geoData = await geoResponse.json();
+
+                    if (!geoData.results || geoData.results.length === 0) {
+                        errorArea.innerText = 'Cidade não encontrada. Tente novamente.';
+                        return;
+                    }
+
+                    const location = geoData.results[0];
+                    latitude = location.latitude;
+                    longitude = location.longitude;
+                    displayName = `${location.name}${location.admin1 ? ' - ' + location.admin1 : ''} (${location.country || ''})`;
                 }
 
-                const location = geoData.results[0];
-                const { latitude, longitude, name, admin1, country } = location;
-
-                // Consulta a previsão do tempo com temperatura, umidade e vento atuais
+                // Busca dados meteorológicos
                 const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,time&timezone=auto`);
                 const weatherData = await weatherResponse.json();
 
-                // Exibe os dados atuais da cidade pesquisada
-                document.getElementById('cityName').innerText = `${name} - ${admin1 || ''} (${country || ''})`;
+                document.getElementById('cityName').innerText = displayName;
                 document.getElementById('currentTemp').innerText = `${weatherData.current.temperature_2m}°C`;
                 document.getElementById('currentHumidity').innerText = `${weatherData.current.relative_humidity_2m}%`;
                 document.getElementById('currentWind').innerText = `${weatherData.current.wind_speed_10m} km/h`;
                 document.getElementById('currentCondition').innerText = getWeatherDescription(weatherData.current.weather_code);
 
-                // Exibe a previsão dos próximos 5 dias
+                // Previsão para os próximos 5 dias
                 const forecastContainer = document.getElementById('forecastContainer');
                 forecastContainer.innerHTML = '';
 
@@ -360,13 +432,16 @@
                     forecastContainer.appendChild(card);
                 }
 
+                // Limpa seleções temporárias
+                selectedLat = null;
+                selectedLon = null;
+
             } catch (error) {
                 console.error(error);
                 errorArea.innerText = 'Erro ao buscar dados meteorológicos. Verifique sua conexão.';
             }
         }
 
-        // Descrição do código meteorológico
         function getWeatherDescription(code) {
             const weatherCodes = {
                 0: 'Céu limpo',
@@ -383,20 +458,34 @@
             return weatherCodes[code] || 'Condição estável';
         }
 
-        // Executado assim que a página carrega
+        // Executado ao carregar a página
         window.onload = () => {
-            buscarDadosItamaraju(); // Carrega Itamaraju fixo
+            buscarDadosItamaraju(); // Carrega apenas dados reais do Arduino no Supabase
             getWeatherData();        // Carrega a cidade inicial da busca (Salvador)
 
-            // Permite pesquisar ao pressionar a tecla Enter no campo de busca
-            document.getElementById('cityInput').addEventListener('keypress', function (e) {
+            const cityInput = document.getElementById('cityInput');
+
+            // Evento para buscar sugestões enquanto o usuário digita
+            cityInput.addEventListener('input', (e) => {
+                fetchCitySuggestions(e.target.value.trim());
+            });
+
+            // Permite pesquisar ao pressionar Enter
+            cityInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     getWeatherData();
                 }
             });
 
-            // Atualiza os dados de Itamaraju automaticamente a cada 1 Minuto
-            setInterval(buscarDadosItamaraju, 60000);
+            // Esconde sugestões ao clicar fora do campo
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-box-wrapper')) {
+                    document.getElementById('suggestions').style.display = 'none';
+                }
+            });
+
+            // Atualiza o painel do Arduino a cada 5 segundos
+            setInterval(buscarDadosItamaraju, 5000);
         };
     </script>
 </body>

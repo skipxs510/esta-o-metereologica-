@@ -8,13 +8,15 @@
     <link rel="icon" type="image/png" href="logo.png">
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary-blue: #1e3a8a;
             --accent-blue: #3b82f6;
             --light-blue: #e0f2fe;
             --dark-blue: #0f172a;
-            --bg-color: #f8fafc;
+            --bg-color: #f1f5f9;
             --card-bg: #ffffff;
             --text-color: #1e293b;
             --border-color: #cbd5e1;
@@ -36,20 +38,16 @@
         header {
             background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
             color: white;
-            padding: 1.5rem 2rem;
+            padding: 1.2rem 2rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        header h1 {
-            font-size: 1.8rem;
-        }
-
         .header-logo {
-            height: 60px;
-            width: 60px;
+            height: 55px;
+            width: 55px;
             border-radius: 50%;
             background-color: white;
             padding: 3px;
@@ -57,18 +55,30 @@
             border: 2px solid white;
         }
 
+        .header-titles h1 {
+            font-size: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .header-titles p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
         .alert-banner {
             background-color: var(--light-blue);
             color: #0369a1;
             text-align: center;
-            padding: 0.6rem;
+            padding: 0.5rem;
             font-weight: 600;
+            font-size: 0.9rem;
             border-bottom: 1px solid #bae6fd;
         }
 
         main {
             max-width: 1400px;
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             padding: 0 1.5rem;
         }
 
@@ -93,16 +103,16 @@
 
         .card {
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border-top: 4px solid var(--accent-blue);
         }
 
         .card h3 {
             color: var(--primary-blue);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -111,9 +121,9 @@
         .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            padding: 5px 0;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 0.92rem;
+            font-size: 0.88rem;
         }
 
         .info-row span:last-child {
@@ -121,44 +131,51 @@
             color: var(--primary-blue);
         }
 
-        /* Estação Central */
-        .central-station {
+        .station-card {
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            padding: 1.8rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border-top: 5px solid var(--primary-blue);
             text-align: center;
         }
 
-        .central-station h2 {
+        .station-card h2 {
             color: var(--primary-blue);
-            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .temp-display {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 700;
             color: var(--primary-blue);
-            margin: 1rem 0;
+            margin: 0.5rem 0;
         }
 
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
+        .temp-range {
+            font-size: 0.95rem;
+            color: #475569;
+            margin-bottom: 0.8rem;
+        }
+
+        .station-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
             border-top: 1px solid #e2e8f0;
+            font-size: 0.92rem;
+            color: #475569;
         }
 
-        /* Seção de Pesquisa e Previsões */
         .search-section {
-            margin-top: 2.5rem;
+            margin-top: 2rem;
             background: var(--card-bg);
             padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border-top: 4px solid var(--accent-blue);
         }
 
@@ -166,15 +183,15 @@
             display: flex;
             gap: 10px;
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .search-box input {
             flex: 1;
-            padding: 0.75rem 1rem;
+            padding: 0.6rem 0.9rem;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
         }
 
@@ -187,10 +204,11 @@
             background-color: var(--primary-blue);
             color: white;
             border: none;
-            padding: 0 1.5rem;
+            padding: 0 1.4rem;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: background 0.2s;
         }
 
@@ -225,11 +243,17 @@
             color: var(--primary-blue);
         }
 
+        .section-title {
+            color: var(--primary-blue);
+            margin: 2rem 0 0.8rem 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
         .forecast-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 1rem;
-            margin-top: 1rem;
         }
 
         @media (max-width: 768px) {
@@ -239,27 +263,20 @@
         }
 
         .forecast-card {
-            background: #f8fafc;
+            background: var(--card-bg);
             border: 1px solid #e2e8f0;
             padding: 1rem;
             border-radius: 8px;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
             border-top: 3px solid var(--accent-blue);
+            transition: transform 0.2s;
         }
 
-        .forecast-card h4 {
-            color: var(--primary-blue);
-            margin-bottom: 0.5rem;
+        .forecast-card:hover {
+            transform: translateY(-2px);
         }
 
-        .section-title {
-            color: var(--primary-blue);
-            margin: 2rem 0 1rem 0;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        /* Notícias */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -279,13 +296,13 @@
 
         .news-item h4 {
             color: var(--primary-blue);
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 0.4rem;
         }
 
         .news-item p {
             color: #64748b;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             margin-bottom: 0.8rem;
         }
 
@@ -296,17 +313,13 @@
             font-size: 0.85rem;
         }
 
-        .news-item a:hover {
-            text-decoration: underline;
-        }
-
         footer {
             text-align: center;
-            padding: 2rem;
+            padding: 1.5rem;
             margin-top: 3rem;
             background-color: var(--dark-blue);
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
         }
 
         .error-msg {
@@ -314,98 +327,105 @@
             font-weight: 600;
             text-align: center;
             margin-top: 0.5rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Site Meteorológico Escola Crescer</h1>
         <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
+        <div class="header-titles">
+            <h1>Site meteorológico</h1>
+            <p>Escola Crescer, Itamaraju-ba</p>
+        </div>
     </header>
 
     <div class="alert-banner">
-        ⚠️ ATENÇÃO: Monitoramento meteorológico ativo em tempo real para Itamaraju e região.
+        ⚠️ ATENÇÃO: Avisos meteorológicos vigentes para tempestades severas em algumas regiões.
     </div>
 
     <main>
-        <!-- GRID DE 3 COLUNAS -->
         <div class="dashboard-grid">
-            
-            <!-- COLUNA ESQUERDA: LUA E MARÉS -->
+            <!-- COLUNA ESQUERDA: FASE DA LUA E MARÉS -->
             <div class="side-column">
                 <div class="card">
-                    <h3>🌙 Fase da Lua</h3>
-                    <div style="text-align: center; margin-bottom: 0.8rem;">
-                        <span id="itamarajuMoonIcon" style="font-size: 2.5rem;">🌕</span>
-                        <div id="itamarajuMoonPhase" style="font-weight: 600; color: var(--primary-blue); margin-top: 5px;">Carregando...</div>
-                    </div>
-                    <div class="info-row" style="justify-content: center; font-size: 0.85rem; color: #64748b;" id="itamarajuMoonFullDays">--</div>
-                    <div style="font-size: 0.82rem; color: #64748b; text-align: center; margin-top: 4px;" id="itamarajuNextPhases">--</div>
+                    <div style="text-align: center; font-size: 1.8rem; margin-bottom: 2px;" id="itamarajuMoonIcon">🌙</div>
+                    <h3>Fase da Lua</h3>
+                    <div class="info-row" style="justify-content: center; font-weight: 600; color: var(--primary-blue); border: none; font-size: 0.92rem;" id="itamarajuMoonPhase">Carregando...</div>
+                    <div class="info-row" style="justify-content: center; color: #64748b; font-size: 0.82rem; border: none;" id="itamarajuMoonFullDays">--</div>
+                    <div class="info-row" style="justify-content: center; color: #64748b; font-size: 0.82rem; border: none;" id="itamarajuNextPhases">--</div>
                 </div>
 
-                <div class="card">
-                    <h3>🌊 Marés (Itamaraju/Região)</h3>
+                <div class="card" style="border-top-color: var(--primary-blue);">
+                    <h3>🌊 Informações Marítimas</h3>
                     <div class="info-row"><span>Preamar (Alta):</span> <span id="tideHigh">04:15 / 16:40</span></div>
                     <div class="info-row"><span>Baixa-mar:</span> <span id="tideLow">10:25 / 22:50</span></div>
-                    <div class="info-row"><span>Condição:</span> <span>Estável</span></div>
+                    <div class="info-row"><span>Estado:</span> <span>Normal / Estável</span></div>
                 </div>
             </div>
 
             <!-- COLUNA CENTRAL: ESTAÇÃO ITAMARAJU (ARDUINO) -->
             <div>
-                <div class="central-station">
+                <section class="station-card">
                     <h2>📍 Estação Meteorológica Local</h2>
-                    <p style="color: #64748b; font-size: 0.9rem;">Escola Crescer - Itamaraju/BA (Tempo Real)</p>
+                    <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 0.3rem;">Escola Crescer - Itamaraju/BA (Tempo Real via Arduino)</p>
                     
                     <div class="temp-display" id="arduinoTemp">--°C</div>
                     
-                    <div style="font-size: 1rem; color: #475569; margin-bottom: 1rem;">
-                        Máx Hoje: <strong id="itamarajuTodayMax" style="color: var(--primary-blue);">--°C</strong> | Mín Hoje: <strong id="itamarajuTodayMin" style="color: var(--primary-blue);">--°C</strong>
+                    <div class="temp-range">
+                        Máx: <strong style="color: var(--primary-blue);" id="itamarajuTodayMax">--°C</strong> | Mín: <strong style="color: var(--primary-blue);" id="itamarajuTodayMin">--°C</strong>
                     </div>
 
-                    <div class="details-grid">
-                        <div>Umidade: <strong id="arduinoHumidity" style="color: var(--primary-blue);">--%</strong></div>
-                        <div>Vento: <strong id="arduinoWind" style="color: var(--primary-blue);">-- km/h</strong></div>
+                    <div class="station-details">
+                        <div>Umidade: <strong style="color: var(--primary-blue);" id="arduinoHumidity">--%</strong></div>
+                        <div>Vento: <strong style="color: var(--primary-blue);" id="arduinoWind">-- km/h</strong></div>
                     </div>
 
-                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 0.8rem;">
-                        ☀️ Nascer do sol: <strong id="arduinoSunrise">--:--</strong> | 🌇 Pôr do sol: <strong id="arduinoSunset">--:--</strong>
+                    <div style="margin-top: 0.8rem; font-size: 0.88rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 0.8rem;">
+                        ☀️ Nascer do sol: <strong style="color: var(--primary-blue);" id="arduinoSunrise">--:--</strong> | 🌇 Pôr do sol: <strong style="color: var(--primary-blue);" id="arduinoSunset">--:--</strong>
                     </div>
 
-                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #dc2626; margin-top: 15px; font-weight: 600;">
+                    <p id="arduinoStatus" style="font-size: 0.82rem; color: #dc2626; margin-top: 10px; font-weight: 600;">
                         ⚠️ Aguardando dados do Arduino...
                     </p>
-                </div>
+                </section>
             </div>
 
-            <!-- COLUNA DIREITA: INFORMAÇÕES DE SOL E LUA -->
+            <!-- COLUNA DIREITA: SOL E LUA DETALHADOS -->
             <div class="side-column">
                 <div class="card">
-                    <h3>☀️ Sol e 🌙 Lua</h3>
-                    <div style="font-size: 0.88rem;">
+                    <h3>Fase Solar e Lunar</h3>
+                    <div style="font-size: 0.85rem;">
                         <p style="font-weight: 600; color: var(--primary-blue); border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; margin-bottom: 4px;">Sol</p>
                         <div class="info-row"><span>Nascer:</span> <span id="itamarajuSunrise">--:--</span></div>
                         <div class="info-row"><span>Zênite:</span> <span id="itamarajuSunZenith">--:--</span></div>
-                        <div class="info-row"><span>Pôr:</span> <span id="itamarajuSunset">--:--</span></div>
+                        <div class="info-row"><span>Pôr do Sol:</span> <span id="itamarajuSunset">--:--</span></div>
 
                         <p style="font-weight: 600; color: var(--primary-blue); border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; margin-top: 10px; margin-bottom: 4px;">Lua</p>
-                        <div class="info-row"><span>Nascer:</span> <span id="moonriseTime">--:--</span></div>
-                        <div class="info-row"><span>Zênite:</span> <span id="moonZenithTime">--:--</span></div>
-                        <div class="info-row"><span>Ocaso:</span> <span id="moonsetTime">--:--</span></div>
+                        <div class="info-row"><span>Nascer da Lua:</span> <span id="moonriseTime">--:--</span></div>
+                        <div class="info-row"><span>Culminação:</span> <span id="moonZenithTime">--:--</span></div>
+                        <div class="info-row"><span>Ocaso da Lua:</span> <span id="moonsetTime">--:--</span></div>
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- PREVISÃO 5 DIAS ITAMARAJU -->
+        <!-- SEÇÃO DO GRÁFICO DE PRÓXIMAS HORAS -->
+        <div class="card" style="margin-top: 1.5rem; border-top-color: var(--accent-blue);">
+            <h3>📈 Variação Térmica nas Próximas Horas (Itamaraju)</h3>
+            <div style="position: relative; height: 250px; width: 100%;">
+                <canvas id="hourlyTemperatureChart"></canvas>
+            </div>
+        </div>
+
+        <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
         <h3 class="section-title">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
         <div class="forecast-container" id="itamarajuForecastContainer"></div>
 
-        <!-- PESQUISA DE OUTRAS CIDADES -->
+        <!-- SEÇÃO DE PESQUISA DE CIDADES -->
         <div class="search-section">
-            <h3 class="section-title" style="margin-top: 0;">🔎 Consultar Outras Cidades</h3>
+            <h3 class="section-title" style="margin-top: 0; margin-bottom: 1rem;">🔎 Consultar Outras Cidades</h3>
             <div class="search-box">
                 <div style="position: relative; flex: 1;">
                     <input type="text" id="cityInput" placeholder="Digite o nome da cidade (Ex: Salvador, São Paulo)..." autocomplete="off" value="Porto Seguro">
@@ -415,35 +435,38 @@
             </div>
             <div id="errorArea" class="error-msg"></div>
 
-            <!-- RESULTADO DA CIDADE PESQUISADA -->
-            <div id="currentWeather" style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
-                <h2 id="cityName" style="color: var(--primary-blue); font-size: 1.4rem;">Porto Seguro</h2>
-                <div style="font-size: 3rem; font-weight: 700; color: var(--primary-blue); margin: 0.5rem 0;" id="currentTemp">--°C</div>
-                <div style="font-size: 0.95rem; color: #475569; margin-bottom: 0.5rem;">
-                    Máx: <strong id="searchTodayMax" style="color: var(--primary-blue);">--°C</strong> | Mín: <strong id="searchTodayMin" style="color: var(--primary-blue);">--°C</strong>
+            <div id="currentWeather" style="text-align: center; margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid #e2e8f0;">
+                <h2 id="cityName" style="color: var(--primary-blue); font-size: 1.25rem;">Porto Seguro - Bahia</h2>
+                <div class="temp-display" id="currentTemp" style="font-size: 3.2rem;">--°C</div>
+                
+                <div class="temp-range">
+                    Máx: <strong style="color: var(--primary-blue);" id="searchTodayMax">--°C</strong> | Mín: <strong style="color: var(--primary-blue);" id="searchTodayMin">--°C</strong>
                 </div>
-                <p id="currentCondition" style="color: #64748b; font-size: 1rem; margin-bottom: 1rem;">Carregando...</p>
-                <div style="display: flex; justify-content: center; gap: 2rem; color: #475569; font-size: 0.95rem;">
-                    <div>Umidade: <strong id="currentHumidity" style="color: var(--primary-blue);">--%</strong></div>
-                    <div>Vento: <strong id="currentWind" style="color: var(--primary-blue);">-- km/h</strong></div>
+
+                <p id="currentCondition" style="color: #64748b; font-size: 0.95rem; margin-bottom: 0.8rem;">Carregando...</p>
+                
+                <div class="station-details">
+                    <div>Umidade: <strong style="color: var(--primary-blue);" id="currentHumidity">--%</strong></div>
+                    <div>Vento: <strong style="color: var(--primary-blue);" id="currentWind">-- km/h</strong></div>
                 </div>
-                <div style="margin-top: 0.8rem; font-size: 0.9rem; color: #64748b;">
-                    ☀️ Nascer do sol: <strong id="searchSunrise" style="color: var(--primary-blue);">--:--</strong> | 🌇 Pôr do sol: <strong id="searchSunset" style="color: var(--primary-blue);">--:--</strong>
+
+                <div style="margin-top: 0.8rem; font-size: 0.88rem; color: #475569;">
+                    ☀️ Nascer do sol: <strong style="color: var(--primary-blue);" id="searchSunrise">--:--</strong> | 🌇 Pôr do sol: <strong style="color: var(--primary-blue);" id="searchSunset">--:--</strong>
                 </div>
             </div>
         </div>
 
-        <!-- PREVISÃO 5 DIAS CIDADE PESQUISADA -->
+        <!-- PREVISÃO 5 DIAS - CIDADE PESQUISADA -->
         <h3 class="section-title">📅 Previsão para os Próximos 5 Dias (<span id="searchCityForecastName">Porto Seguro</span>)</h3>
         <div class="forecast-container" id="forecastContainer"></div>
 
         <!-- SEÇÃO DE NOTÍCIAS -->
-        <h3 class="section-title">📰 Últimas Notícias</h3>
+        <h3 class="section-title">📰 Últimas Notícias do Brasil e do Mundo</h3>
         <div class="news-grid" id="newsContainer">
             <div class="news-item">
                 <div>
                     <h4>Carregando notícias...</h4>
-                    <p>Buscando atualizações recentes do clima e tecnologia educacional.</p>
+                    <p>Aguarde um instante enquanto buscamos as principais atualizações.</p>
                 </div>
             </div>
         </div>
@@ -460,6 +483,7 @@
         const SUPABASE_URL = 'https://klnuljixtmixfrzgpzmv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_06gMLuRxhQh4Z_z6jb1Bdg_dWXSx3Du';
         let supabaseClient = null;
+        let myChart = null;
 
         if (window.supabase) {
             try {
@@ -533,7 +557,14 @@
             container.innerHTML = '';
             let count = 0;
             for (let i = 1; i < dailyData.time.length && count < 5; i++) {
-                const dateFormatted = dailyData.time[i].split('-').reverse().slice(0, 2).join('/');
+                const dataString = dailyData.time[i];
+                const partesData = dataString.split('-');
+                const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+                
+                let nomeDia = dataObj.toLocaleDateString('pt-BR', { weekday: 'long' });
+                nomeDia = nomeDia.charAt(0).toUpperCase() + nomeDia.slice(1);
+                const dataFormatada = `${partesData[2]}/${partesData[1]}`;
+
                 const max = Math.round(dailyData.temperature_2m_max[i]);
                 const min = Math.round(dailyData.temperature_2m_min[i]);
                 const probChuva = dailyData.precipitation_probability_max ? dailyData.precipitation_probability_max[i] : 0;
@@ -542,11 +573,14 @@
                 const card = document.createElement('div');
                 card.className = 'forecast-card';
                 card.innerHTML = `
-                    <h4>${dateFormatted}</h4>
-                    <p style="font-size: 0.8rem; margin-bottom: 6px; color: #475569;">${cond}</p>
-                    <p style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 600;">🌧️ ${probChuva}%</p>
-                    <p style="margin-top: 6px;">Máx: <strong style="color: var(--primary-blue);">${max}°C</strong></p>
-                    <p>Mín: <strong style="color: var(--primary-blue);">${min}°C</strong></p>
+                    <h4 style="font-size: 0.9rem; margin-bottom: 2px;">${nomeDia}</h4>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 4px;">${dataFormatada}</p>
+                    <p style="font-size: 0.78rem; margin-bottom: 4px; color: #475569; min-height: 2rem;">${cond}</p>
+                    <p style="font-size: 0.78rem; color: var(--accent-blue); font-weight: 600; margin-bottom: 4px;">🌧️ ${probChuva}%</p>
+                    <div style="font-size: 0.85rem; border-top: 1px solid #f1f5f9; padding-top: 4px;">
+                        Máx: <strong style="color: var(--primary-blue);">${max}°C</strong><br>
+                        Mín: <strong style="color: var(--primary-blue);">${min}°C</strong>
+                    </div>
                 `;
                 container.appendChild(card);
                 count++;
@@ -588,6 +622,67 @@
                 }
             } catch (err) {
                 console.error("Erro na previsão de Itamaraju:", err);
+            }
+        }
+
+        async function carregarGraficoHorario() {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${ITAMARAJU_LAT}&longitude=${ITAMARAJU_LON}&hourly=temperature_2m&timezone=America%2FSao_Paulo&forecast_days=1`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data && data.hourly) {
+                    const todosTempos = data.hourly.time;
+                    const todasTemperaturas = data.hourly.temperature_2m;
+                    const agoraIndex = new Date().getHours();
+                    
+                    const horasLabels = todosTempos.slice(agoraIndex, agoraIndex + 24).map(tempoStr => {
+                        return tempoStr.split('T')[1].substring(0, 5);
+                    });
+
+                    const temperaturasValores = todasTemperaturas.slice(agoraIndex, agoraIndex + 24);
+                    const ctx = document.getElementById('hourlyTemperatureChart').getContext('2d');
+
+                    if (myChart) {
+                        myChart.destroy();
+                    }
+
+                    myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: horasLabels,
+                            datasets: [{
+                                label: 'Temperatura (°C)',
+                                data: temperaturasValores,
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#1e3a8a'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    grid: { color: '#f1f5f9' }
+                                },
+                                x: {
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("Erro ao carregar gráfico:", err);
             }
         }
 
@@ -717,63 +812,62 @@
                     renderizarPrevisao(weatherData.daily, 'forecastContainer');
                 }
             } catch (err) {
-                if (errorArea) errorArea.innerText = 'Erro ao buscar dados meteorológicos.';
+                if (errorArea) errorArea.innerText = 'Erro ao buscar dados da cidade.';
+                document.getElementById('currentCondition').innerText = 'Erro na busca';
             }
         }
 
-        async function carregarNoticias() {
+        async function buscarNoticias() {
             const container = document.getElementById('newsContainer');
             if (!container) return;
 
             const noticias = [
                 {
-                    titulo: "Tecnologia IoT na Educação: Alunos constroem estação",
-                    descricao: "Estudantes da Escola Crescer integram sensores físicos de Arduino a painéis em nuvem.",
+                    titulo: "Estudantes da Escola Crescer apresentam projeto de IoT com Arduino",
+                    descricao: "A feira de ciências deste ano destacou a estação meteorológica desenvolvida pelos alunos do ensino médio.",
                     link: "#"
                 },
                 {
-                    titulo: "Previsão Climática para o Sul da Bahia",
-                    descricao: "Meteorologistas apontam variações na umidade e períodos de sol predominante.",
+                    titulo: "Previsão de chuvas na região sul da Bahia para os próximos dias",
+                    descricao: "Defesa Civil emite alertas preventivos para mudanças repentinas no clima local.",
                     link: "#"
                 },
                 {
-                    titulo: "Monitoramento Ambiental Urbano",
-                    descricao: "Iniciativas escolares aproximam a teoria científica da realidade local.",
+                    titulo: "A importância do monitoramento ambiental nas escolas",
+                    descricao: "Como a tecnologia de baixo custo aproxima a ciência prática do cotidiano dos estudantes.",
                     link: "#"
                 }
             ];
 
             container.innerHTML = '';
-            noticias.forEach(n => {
-                const item = document.createElement('div');
-                item.className = 'news-item';
-                item.innerHTML = `
+            noticias.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'news-item';
+                div.innerHTML = `
                     <div>
-                        <h4>${n.titulo}</h4>
-                        <p>${n.descricao}</p>
+                        <h4>${item.titulo}</h4>
+                        <p>${item.descricao}</p>
                     </div>
-                    <a href="${n.link}" onclick="event.preventDefault(); alert('Em breve!');">Ler mais &rarr;</a>
+                    <a href="${item.link}">Ler mais &rarr;</a>
                 `;
-                container.appendChild(item);
+                container.appendChild(div);
             });
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.onload = () => {
             getItamarajuAstroAndForecast();
             buscarDadosItamaraju();
             buscarClimaCidade('Porto Seguro');
-            carregarNoticias();
-
-            const cityInput = document.getElementById('cityInput');
-            if (cityInput) {
-                cityInput.addEventListener('input', lidarComDigitacao);
-                cityInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') buscarClimaCidade();
-                });
-            }
+            buscarNoticias();
+            carregarGraficoHorario();
 
             setInterval(buscarDadosItamaraju, 30000);
-        });
+        };
+
+        const cityInputElem = document.getElementById('cityInput');
+        if (cityInputElem) {
+            cityInputElem.addEventListener('input', lidarComDigitacao);
+        }
     </script>
 </body>
 </html>

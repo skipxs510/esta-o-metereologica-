@@ -79,12 +79,12 @@
         /* LAYOUT DE 3 COLUNAS: ESQUERDA (LUA + MARÉS), CENTRO (ARDUINO), DIREITA (DIA E NOITE) */
         .content-layout {
             display: grid;
-            grid-template-columns: 1fr 1.4fr 1fr;
-            gap: 1.5rem;
+            grid-template-columns: 0.7fr 1.1fr 0.7fr;
+            gap: 1.3rem;
             align-items: stretch;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1366px) {
             .content-layout {
                 grid-template-columns: 1fr;
             }
@@ -93,7 +93,7 @@
         .column-side {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.3rem;
         }
 
         .info-card {
@@ -378,9 +378,9 @@
                 <div class="info-card">
                     <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
                     <h3>Fase da Lua</h3>
-                    <div class="info-value" id="itamarajuMoonPhase" style="font-size: 1.05rem; font-weight: bold;">Carregando...</div>
-                    <div class="info-value" id="itamarajuMoonFullDays" style="margin-top: 6px; color: #555;">--</div>
-                    <div class="info-value" id="itamarajuNextPhases" style="font-size: 0.82rem; color: #666; margin-top: 4px;">--</div>
+                    <div class="info-value" id="itamarajuMoonPhase" style="font-size: 0.75rem; font-weight: bold;">Carregando...</div>
+                    <div class="info-value" id="itamarajuMoonFullDays" style="margin-top: 4px; color: #555;">--</div>
+                    <div class="info-value" id="itamarajuNextPhases" style="font-size: 0.72rem; color: #666; margin-top: 4px;">--</div>
                 </div>
 
                 <!-- 7. CARD DE MARÉS / INFORMAÇÕES MARÍTIMAS -->
@@ -389,7 +389,7 @@
                     <h3>Informações Marítimas & Marés</h3>
                     <div class="info-value">Preamar (Maré Alta): <strong id="tideHigh">04:15 / 16:40</strong></div>
                     <div class="info-value">Baixa-mar (Maré Baixa): <strong id="tideLow">10:25 / 22:50</strong></div>
-                    <div class="info-value" style="font-size: 0.8rem; color: #555; margin-top: 6px;">Coeficiente / Estado: <strong>Normal / Estável</strong></div>
+                    <div class="info-value" style="font-size: 0.7rem; color: #555; margin-top: 4px;">Coeficiente / Estado: <strong>Normal / Estável</strong></div>
                 </div>
             </div>
 
@@ -418,7 +418,7 @@
                 <div class="info-card">
                     <div class="astro-icon">☀️ 🌙</div>
                     <h3>Informações do Dia e Noite</h3>
-                    <div style="text-align: left; margin-top: 5px; font-size: 0.88rem;">
+                    <div style="text-align: left; margin-top: 4px; font-size: 0.7-rem;">
                         <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 3px; margin-bottom: 4px;">☀️ Sol</p>
                         <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
                         <div class="info-value">Zênite (Topo): <span id="itamarajuSunZenith">--:--</span></div>

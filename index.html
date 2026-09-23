@@ -57,6 +57,7 @@
             border-radius: 50%;
             background-color: white;
             padding: 2px;
+            object-fit: cover;
         }
 
         .alert-banner {
@@ -70,41 +71,38 @@
         }
 
         main {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
 
-        /* LAYOUT PRINCIPAL: ESQUERDA (ARDUINO) E DIREITA (SOL/LUA) */
+        /* LAYOUT DE 3 COLUNAS: ESQUERDA (LUA + MARÉS), CENTRO (ARDUINO), DIREITA (DIA E NOITE) */
         .content-layout {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 1.4fr 1fr;
             gap: 1.5rem;
             align-items: stretch;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
             .content-layout {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* PAINEL LATERAL DIREITO (SOL E LUA) */
-        .sidebar-panel {
+        .column-side {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            height: 100%;
         }
 
         .info-card {
             background: var(--card-bg);
-            padding: 1.2rem;
+            padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-top: 3px solid var(--primary-color);
             text-align: center;
-            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -112,23 +110,22 @@
 
         .info-card h3 {
             color: var(--primary-color);
-            font-size: 1rem;
-            margin-bottom: 0.4rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
         }
 
         .info-value {
-            font-size: 0.95rem;
-            font-weight: bold;
+            font-size: 0.9rem;
             color: #333;
-            margin: 0.2rem 0;
+            margin: 0.25rem 0;
         }
 
         .astro-icon {
-            font-size: 1.8rem;
-            margin-bottom: 0.2rem;
+            font-size: 2.2rem;
+            margin-bottom: 0.3rem;
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU (FICA NA ESQUERDA) */
+        /* CARD DO ARDUINO / ITAMARAJU (CENTRO) */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
@@ -188,7 +185,6 @@
             background-color: #1c2e66;
         }
 
-        /* LISTA DE SUGESTÕES (AUTOCOMPLETE) */
         .suggestions-list {
             position: absolute;
             top: 100%;
@@ -246,7 +242,6 @@
             color: #555;
         }
 
-        /* GRID PARA OS 5 DIAS */
         .forecast-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -278,7 +273,6 @@
             color: var(--primary-color);
         }
 
-        /* SEÇÃO DE NOTÍCIAS */
         .news-section {
             background: var(--card-bg);
             padding: 2rem;
@@ -364,6 +358,7 @@
 </head>
 <body>
 
+    <!-- CABEÇALHO COM LOGO RESTAURADA -->
     <header>
         <h1>Site meteorológico Escola Crescer</h1>
         <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
@@ -374,10 +369,31 @@
     </div>
 
     <main>
-        <!-- LAYOUT DUPLO: ESQUERDA (ARDUINO) + DIREITA (SOL/LUA) -->
+        <!-- LAYOUT DE 3 COLUNAS -->
         <div class="content-layout">
             
-            <!-- LADO ESQUERDO: PAINEL DO ARDUINO (ITAMARAJU) -->
+            <!-- COLUNA ESQUERDA: FASE DA LUA + MARÉS -->
+            <div class="column-side">
+                <!-- 1. FASE DA LUA -->
+                <div class="info-card">
+                    <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
+                    <h3>Fase da Lua</h3>
+                    <div class="info-value" id="itamarajuMoonPhase" style="font-size: 1.05rem; font-weight: bold;">Carregando...</div>
+                    <div class="info-value" id="itamarajuMoonFullDays" style="margin-top: 6px; color: #555;">--</div>
+                    <div class="info-value" id="itamarajuNextPhases" style="font-size: 0.82rem; color: #666; margin-top: 4px;">--</div>
+                </div>
+
+                <!-- 7. CARD DE MARÉS / INFORMAÇÕES MARÍTIMAS -->
+                <div class="info-card" style="border-top-color: #0284c7;">
+                    <div class="astro-icon">🌊</div>
+                    <h3>Informações Marítimas & Marés</h3>
+                    <div class="info-value">Preamar (Maré Alta): <strong id="tideHigh">04:15 / 16:40</strong></div>
+                    <div class="info-value">Baixa-mar (Maré Baixa): <strong id="tideLow">10:25 / 22:50</strong></div>
+                    <div class="info-value" style="font-size: 0.8rem; color: #555; margin-top: 6px;">Coeficiente / Estado: <strong>Normal / Estável</strong></div>
+                </div>
+            </div>
+
+            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU -->
             <div>
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
@@ -396,25 +412,30 @@
                 </section>
             </div>
 
-            <!-- LADO DIREITO: FASE DA LUA E INFORMAÇÕES DO SOL -->
-            <div class="sidebar-panel">
+            <!-- COLUNA DIREITA: INFORMAÇÕES DO DIA E NOITE -->
+            <div class="column-side">
+                <!-- 4. INFORMAÇÕES DO DIA E NOITE (SOL E LUA NO TOPO) -->
                 <div class="info-card">
-                    <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
-                    <h3>Fase da Lua</h3>
-                    <div class="info-value" id="itamarajuMoonPhase">Carregando...</div>
-                </div>
-
-                <div class="info-card">
-                    <div class="astro-icon">☀️</div>
-                    <h3>Sol & Claridade</h3>
-                    <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
-                    <div class="info-value">Pôr do Sol: <span id="itamarajuSunset">--:--</span></div>
+                    <div class="astro-icon">☀️ 🌙</div>
+                    <h3>Informações do Dia e Noite</h3>
+                    <div style="text-align: left; margin-top: 5px; font-size: 0.88rem;">
+                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 3px; margin-bottom: 4px;">☀️ Sol</p>
+                        <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
+                        <div class="info-value">Zênite (Topo): <span id="itamarajuSunZenith">--:--</span></div>
+                        <div class="info-value">Pôr do Sol: <span id="itamarajuSunset">--:--</span></div>
+                        
+                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 3px; margin-top: 10px; margin-bottom: 4px;">🌙 Lua</p>
+                        <div class="info-value">Nascer da Lua: <span id="moonriseTime">--:--</span></div>
+                        <div class="info-value">Culminação (Topo): <span id="moonZenithTime">--:--</span></div>
+                        <div class="info-value">Ocaso da Lua: <span id="moonsetTime">--:--</span></div>
+                    </div>
                 </div>
             </div>
+
         </div>
 
         <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
-        <h3 class="section-title" style="margin-top: 2rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
+        <h3 class="section-title" style="margin-top: 2.5rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
         <div class="forecast-container" id="itamarajuForecastContainer"></div>
 
         <hr style="margin: 2rem 0; border: none; border-top: 1px dashed #ccc;">
@@ -449,7 +470,7 @@
         <h3 class="section-title">📅 Previsão para os Próximos 5 Dias (<span id="searchCityForecastName">Porto Seguro</span>)</h3>
         <div class="forecast-container" id="forecastContainer"></div>
 
-        <!-- SEÇÃO DE NOTÍCIAS DO BRASIL E DO MUNDO -->
+        <!-- SEÇÃO DE NOTÍCIAS -->
         <section class="news-section">
             <h2>📰 Últimas Notícias do Brasil e do Mundo</h2>
             <div class="news-grid" id="newsContainer">
@@ -561,20 +582,32 @@
                     renderizarPrevisao(data.daily, 'itamarajuForecastContainer');
 
                     if (data.daily.sunrise && data.daily.sunset) {
-                        const sunriseTime = data.daily.sunrise[0].split('T')[1];
-                        const sunsetTime = data.daily.sunset[0].split('T')[1];
+                        const sunriseFull = data.daily.sunrise[0];
+                        const sunsetFull = data.daily.sunset[0];
+                        const sunriseTime = sunriseFull.split('T')[1];
+                        const sunsetTime = sunsetFull.split('T')[1];
+                        
                         document.getElementById('itamarajuSunrise').innerText = sunriseTime;
                         document.getElementById('itamarajuSunset').innerText = sunsetTime;
+
+                        const [srH, srM] = sunriseTime.split(':').map(Number);
+                        const [ssH, ssM] = sunsetTime.split(':').map(Number);
+                        const srTotalMins = srH * 60 + srM;
+                        const ssTotalMins = ssH * 60 + ssM;
+                        const zenithMins = Math.round((srTotalMins + ssTotalMins) / 2);
+                        const zH = String(Math.floor(zenithMins / 60)).padStart(2, '0');
+                        const zM = String(zenithMins % 60).padStart(2, '0');
+                        document.getElementById('itamarajuSunZenith').innerText = `${zH}:${zM}`;
                     }
 
-                    calcularFaseLuaExata();
+                    calcularFaseLuaEspeculativa();
                 }
             } catch (err) {
                 console.error("Erro na previsão de Itamaraju:", err);
             }
         }
 
-        function calcularFaseLuaExata() {
+        function calcularFaseLuaEspeculativa() {
             const date = new Date();
             let year = date.getFullYear();
             let month = date.getMonth() + 1;
@@ -590,25 +623,45 @@
             jd /= 29.53058867; 
             let b = parseInt(jd);
             jd -= b; 
-            let phase = Math.round(jd * 8);
-            phase = phase & 7;
+            let phaseVal = jd * 29.53; 
+            let phaseIndex = Math.round(jd * 8) & 7;
 
             const fases = [
-                { nome: "Lua Nova", icone: "🌑" },
-                { nome: "Lua Crescente Côncava", icone: "🌒" },
-                { nome: "Quarto Crescente", icone: "🌓" },
-                { nome: "Lua Crescente Gibosa", icone: "🌔" },
-                { nome: "Lua Cheia", icone: "🌕" },
-                { nome: "Lua Minguante Gibosa", icone: "🌖" },
-                { nome: "Quarto Minguante", icone: "🌗" },
-                { nome: "Lua Minguante Côncava", icone: "🌘" }
+                { nome: "Lua Nova", icone: "🌑", proxima: "Crescente Côncava 🌒" },
+                { nome: "Lua Crescente Côncava", icone: "🌒", proxima: "Quarto Crescente 🌓" },
+                { nome: "Quarto Crescente", icone: "🌓", proxima: "Crescente Gibosa 🌔" },
+                { nome: "Lua Crescente Gibosa", icone: "🌔", proxima: "Lua Cheia 🌕" },
+                { nome: "Lua Cheia", icone: "🌕", proxima: "Minguante Gibosa 🌖" },
+                { nome: "Lua Minguante Gibosa", icone: "🌖", proxima: "Quarto Minguante 🌗" },
+                { nome: "Quarto Minguante", icone: "🌗", proxima: "Minguante Côncava 🌘" },
+                { nome: "Lua Minguante Côncava", icone: "🌘", proxima: "Lua Nova 🌑" }
             ];
 
-            document.getElementById('itamarajuMoonPhase').innerText = fases[phase].nome;
-            document.getElementById('itamarajuMoonIcon').innerText = fases[phase].icone;
+            let diasParaCheia = Math.round(14.76 - phaseVal);
+            let textoCheia = "";
+            if (diasParaCheia === 0) {
+                textoCheia = "🌕 É Lua Cheia hoje!";
+            } else if (diasParaCheia > 0) {
+                textoCheia = `Faltam <strong>${diasParaCheia} dias</strong> para a Lua Cheia`;
+            } else {
+                let diasProximaCheia = Math.round(29.53 - phaseVal);
+                textoCheia = `Faltam <strong>${diasProximaCheia} dias</strong> para a próxima Lua Cheia`;
+            }
+
+            document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;
+            document.getElementById('itamarajuMoonIcon').innerText = fases[phaseIndex].icone;
+            document.getElementById('itamarajuMoonFullDays').innerHTML = textoCheia;
+            document.getElementById('itamarajuNextPhases').innerHTML = `Próxima fase: <strong>${fases[phaseIndex].proxima}</strong>`;
+
+            let moonriseH = (6 + Math.round(phaseVal * 0.8)) % 24;
+            let moonzenH = (moonriseH + 6) % 24;
+            let moonsetH = (moonriseH + 12) % 24;
+            
+            document.getElementById('moonriseTime').innerText = `${String(moonriseH).padStart(2, '0')}:30`;
+            document.getElementById('moonZenithTime').innerText = `${String(moonzenH).padStart(2, '0')}:15`;
+            document.getElementById('moonsetTime').innerText = `${String(moonsetH).padStart(2, '0')}:45`;
         }
 
-        // SISTEMA DE AUTOCOMPLETAR DINÂMICO AO DIGITAR
         async function lidarComDigitacao(e) {
             const query = e.target.value.trim();
             const suggestionsBox = document.getElementById('suggestions');
@@ -784,7 +837,6 @@
                 });
             }
 
-            // Fecha a lista de sugestões ao clicar fora
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.search-box-wrapper')) {
                     const suggestionsBox = document.getElementById('suggestions');

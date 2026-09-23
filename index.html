@@ -75,11 +75,12 @@
             padding: 0 1rem;
         }
 
-        /* LAYOUT PRINCIPAL: ESQUERDA (SOL/LUA) E DIREITA (ARDUINO) */
+        /* LAYOUT PRINCIPAL: ESQUERDA (ARDUINO) E DIREITA (SOL/LUA) */
         .content-layout {
             display: grid;
-            grid-template-columns: 1fr 2fr;
+            grid-template-columns: 2fr 1fr;
             gap: 1.5rem;
+            align-items: start;
         }
 
         @media (max-width: 900px) {
@@ -88,7 +89,7 @@
             }
         }
 
-        /* PAINEL LATERAL ESQUERDO (SOL E LUA) */
+        /* PAINEL LATERAL DIREITO (SOL E LUA) */
         .sidebar-panel {
             display: flex;
             flex-direction: column;
@@ -111,7 +112,7 @@
         }
 
         .info-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             color: #333;
             margin: 0.4rem 0;
@@ -122,7 +123,7 @@
             margin-bottom: 0.5rem;
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU */
+        /* CARD DO ARDUINO / ITAMARAJU (FICA NA ESQUERDA) */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
@@ -130,7 +131,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(157, 0, 255, 0.15);
             text-align: center;
-            margin-bottom: 1.5rem;
+            height: 100%;
         }
 
         .arduino-card h2 {
@@ -333,31 +334,14 @@
     </div>
 
     <main>
-        <!-- LAYOUT DUPLO: LATERAL ESQUERDA (LUA/SOL) + CONTEÚDO PRINCIPAL -->
+        <!-- LAYOUT DUPLO: ESQUERDA (ARDUINO) + DIREITA (SOL E LUA) -->
         <div class="content-layout">
             
-            <!-- LADO ESQUERDO: FASE DA LUA E INFORMAÇÕES SOLARES -->
-            <div class="sidebar-panel">
-                <div class="info-card">
-                    <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
-                    <h3>Fase da Lua (Itamaraju)</h3>
-                    <div class="info-value" id="itamarajuMoonPhase">Carregando...</div>
-                </div>
-
-                <div class="info-card">
-                    <div class="astro-icon">☀️</div>
-                    <h3>Sol (Itamaraju)</h3>
-                    <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
-                    <div class="info-value">Pôr do Sol: <span id="itamarajuSunset">--:--</span></div>
-                </div>
-            </div>
-
-            <!-- LADO DIREITO: ARDUINO + CONTEÚDO GERAL -->
+            <!-- LADO ESQUERDO: PAINEL DO ARDUINO (ITAMARAJU) -->
             <div>
-                <!-- PAINEL EXCLUSIVO DO ARDUINO (ITAMARAJU) -->
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-                    <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
                     
                     <div class="temp" id="arduinoTemp">--°C</div>
                     
@@ -366,10 +350,26 @@
                         <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
                     </div>
 
-                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #d32f2f; margin-top: 15px; font-weight: bold;">
+                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #d32f2f; margin-top: 25px; font-weight: bold;">
                         ⚠️ Arduino desconectado. Aguardando envio de dados...
                     </p>
                 </section>
+            </div>
+
+            <!-- LADO DIREITO: FASE DA LUA E INFORMAÇÕES DO SOL -->
+            <div class="sidebar-panel">
+                <div class="info-card">
+                    <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
+                    <h3>Fase da Lua</h3>
+                    <div class="info-value" id="itamarajuMoonPhase">Carregando...</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="astro-icon">☀️</div>
+                    <h3>Sol & Claridade</h3>
+                    <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
+                    <div class="info-value">Pôr do Sol: <span id="itamarajuSunset">--:--</span></div>
+                </div>
             </div>
         </div>
 
@@ -390,7 +390,7 @@
 
         <div id="errorArea" class="error-msg" style="text-align: center;"></div>
 
-        <!-- RESULTADO DA CIDADE PESQUISADA (NO CENTRO) -->
+        <!-- RESULTADO DA CIDADE PESQUISADA -->
         <div class="weather-card" id="currentWeather">
             <h2 id="cityName">Porto Seguro - Bahia</h2>
             <div class="temp" id="currentTemp">--°C</div>
@@ -619,9 +619,6 @@
             }
         }
 
-        // ==========================================
-        // NOTÍCIAS ATUALIZADAS VIA RSS2JSON API
-        // ==========================================
         async function carregarNoticias() {
             const newsContainer = document.getElementById('newsContainer');
             try {

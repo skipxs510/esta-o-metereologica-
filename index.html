@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site meteorológico Escola Crescer</title>
-
+    <title>Site Meteorológico - Escola Crescer</title>
     <!-- Ícone da Aba do Navegador -->
     <link rel="icon" type="image/png" href="logo.png">
-
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
-            --primary-color: #1e3a8a; /* Azul corporativo / escolar profundo */
-            --primary-light: #3b82f6; /* Azul vibrante */
-            --secondary-color: #0f172a;
-            --bg-color: #f0f6fc;
+            --primary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --light-blue: #e0f2fe;
+            --dark-blue: #0f172a;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-color: #1e293b;
-            --accent-blue: #0284c7;
+            --border-color: #cbd5e1;
         }
 
         * {
@@ -32,26 +30,21 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-size: 0.92rem;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
-        /* CABEÇALHO EM TONS DE AZUL */
         header {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-blue));
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
             color: white;
-            padding: 1rem 2rem;
+            padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 4px solid var(--secondary-color);
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         header h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            font-size: 1.8rem;
         }
 
         .header-logo {
@@ -65,146 +58,139 @@
         }
 
         .alert-banner {
-            background-color: #e0f2fe;
+            background-color: var(--light-blue);
             color: #0369a1;
-            border-bottom: 1px solid #bae6fd;
             text-align: center;
             padding: 0.6rem;
             font-weight: 600;
-            font-size: 0.9rem;
+            border-bottom: 1px solid #bae6fd;
         }
 
         main {
-            width: 100%;
             max-width: 1400px;
-            margin: 1.5rem auto;
+            margin: 2rem auto;
             padding: 0 1.5rem;
         }
 
-        /* LAYOUT DE 3 COLUNAS */
-        .content-layout {
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 290px 1fr 290px;
+            grid-template-columns: 280px 1fr 280px;
             gap: 1.5rem;
-            align-items: stretch;
+            align-items: start;
         }
 
         @media (max-width: 1100px) {
-            .content-layout {
+            .dashboard-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        .column-side {
+        .side-column {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
 
-        /* CARTÕES PADRÃO COM DETALHES EM AZUL */
-        .info-card {
+        .card {
             background: var(--card-bg);
-            padding: 1.25rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            border-top: 4px solid var(--primary-light);
-            text-align: center;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent-blue);
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
-        .info-card h3 {
-            color: var(--primary-color);
-            font-size: 1rem;
-            margin-bottom: 0.8rem;
-            font-weight: 600;
-        }
-
-        .info-value {
-            font-size: 0.9rem;
-            color: #475569;
-            margin: 0.35rem 0;
+        .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 0 0.4rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.92rem;
         }
 
-        .astro-icon {
-            font-size: 1.8rem;
-            margin-bottom: 0.3rem;
+        .info-row span:last-child {
+            font-weight: 600;
+            color: var(--primary-blue);
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU */
-        .arduino-card {
+        /* Estação Central */
+        .central-station {
             background: var(--card-bg);
-            border: 1px solid #cbd5e1;
-            border-top: 5px solid var(--primary-color);
-            padding: 1.8rem;
-            border-radius: 8px;
+            border-radius: 10px;
+            padding: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary-blue);
             text-align: center;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
-        .arduino-card h2 {
-            color: var(--primary-color);
-            margin-bottom: 0.3rem;
-            font-size: 1.25rem;
+        .central-station h2 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
         }
 
-        .temp-arduino {
-            font-size: 3.5rem;
+        .temp-display {
+            font-size: 4rem;
             font-weight: 700;
-            color: var(--primary-color);
-            margin: 0.4rem 0;
+            color: var(--primary-blue);
+            margin: 1rem 0;
         }
 
-        /* PESQUISA */
-        .search-box-wrapper {
-            position: relative;
-            flex: 1;
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Seção de Pesquisa e Previsões */
+        .search-section {
+            margin-top: 2.5rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent-blue);
         }
 
         .search-box {
-            background: var(--card-bg);
-            padding: 1.2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             display: flex;
             gap: 10px;
-            margin-bottom: 1.5rem;
-            border-top: 4px solid var(--primary-light);
             position: relative;
+            margin-bottom: 1.5rem;
         }
 
         .search-box input {
-            width: 100%;
-            padding: 0.6rem 0.9rem;
-            border: 1px solid #94a3b8;
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
         }
 
         .search-box input:focus {
-            border-color: var(--primary-light);
+            border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         .search-box button {
-            background-color: var(--primary-color);
+            background-color: var(--primary-blue);
             color: white;
             border: none;
-            padding: 0.6rem 1.4rem;
+            padding: 0 1.5rem;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.95rem;
             transition: background 0.2s;
         }
 
@@ -215,16 +201,16 @@
         .suggestions-list {
             position: absolute;
             top: 100%;
-            left: 1.2rem;
-            right: 130px;
+            left: 0;
+            right: 120px;
             background: white;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
             border-top: none;
             border-radius: 0 0 6px 6px;
             max-height: 180px;
             overflow-y: auto;
             z-index: 1000;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .suggestion-item {
@@ -235,98 +221,45 @@
         }
 
         .suggestion-item:hover {
-            background-color: #eff6ff;
-            color: var(--primary-color);
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
         }
 
-        .weather-card {
-            background: var(--card-bg);
-            padding: 1.8rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            text-align: center;
-            margin-bottom: 1.5rem;
-            border-top: 4px solid var(--primary-color);
-        }
-
-        .weather-card h2 {
-            color: var(--primary-color);
-            font-size: 1.25rem;
-            margin-bottom: 0.4rem;
-        }
-
-        .temp {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin: 0.4rem 0;
-        }
-
-        .details {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 2.5rem;
-            margin-top: 0.8rem;
-            font-size: 1rem;
-            color: #475569;
-        }
-
-        /* PREVISÃO DE 5 DIAS */
         .forecast-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 1rem;
-            margin-bottom: 1.8rem;
+            margin-top: 1rem;
         }
 
         @media (max-width: 768px) {
             .forecast-container {
                 grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             }
-            .suggestions-list {
-                right: 1.2rem;
-                left: 1.2rem;
-            }
         }
 
         .forecast-card {
-            background: var(--card-bg);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             padding: 1rem;
             border-radius: 8px;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--primary-light);
-            font-size: 0.9rem;
-            transition: transform 0.2s;
-        }
-
-        .forecast-card:hover {
-            transform: translateY(-3px);
+            border-top: 3px solid var(--accent-blue);
         }
 
         .forecast-card h4 {
-            margin-bottom: 0.4rem;
-            color: var(--primary-color);
-            font-size: 0.95rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
         }
 
-        /* SEÇÃO DE NOTÍCIAS */
-        .news-section {
-            background: var(--card-bg);
-            padding: 1.8rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-top: 2.5rem;
-            border-top: 4px solid var(--primary-color);
+        .section-title {
+            color: var(--primary-blue);
+            margin: 2rem 0 1rem 0;
+            font-size: 1.3rem;
+            font-weight: 700;
         }
 
-        .news-section h2 {
-            color: var(--primary-color);
-            margin-bottom: 1.2rem;
-            font-size: 1.25rem;
-        }
-
+        /* Notícias */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -334,9 +267,9 @@
         }
 
         .news-item {
-            background: #ffffff;
+            background: var(--card-bg);
             border: 1px solid #e2e8f0;
-            border-left: 4px solid var(--primary-light);
+            border-left: 4px solid var(--accent-blue);
             padding: 1.2rem;
             border-radius: 6px;
             display: flex;
@@ -345,23 +278,22 @@
         }
 
         .news-item h4 {
-            font-size: 0.98rem;
-            color: var(--primary-color);
+            color: var(--primary-blue);
+            font-size: 1rem;
             margin-bottom: 0.4rem;
         }
 
         .news-item p {
-            font-size: 0.85rem;
             color: #64748b;
+            font-size: 0.88rem;
             margin-bottom: 0.8rem;
         }
 
         .news-item a {
             color: var(--accent-blue);
-            font-weight: 600;
             text-decoration: none;
+            font-weight: 600;
             font-size: 0.85rem;
-            align-self: flex-start;
         }
 
         .news-item a:hover {
@@ -370,167 +302,151 @@
 
         footer {
             text-align: center;
-            padding: 1.5rem;
+            padding: 2rem;
             margin-top: 3rem;
-            background-color: var(--secondary-color);
+            background-color: var(--dark-blue);
             color: #94a3b8;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
         }
 
         .error-msg {
             color: #dc2626;
-            margin-top: 0.5rem;
             font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .section-title {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            font-weight: 700;
+            text-align: center;
+            margin-top: 0.5rem;
         }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO -->
     <header>
-        <h1>Site meteorológico Escola Crescer</h1>
+        <h1>Site Meteorológico Escola Crescer</h1>
         <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
     </header>
 
     <div class="alert-banner">
-        ⚠️ ATENÇÃO: Avisos meteorológicos vigentes para tempestades severas em algumas regiões.
+        ⚠️ ATENÇÃO: Monitoramento meteorológico ativo em tempo real para Itamaraju e região.
     </div>
 
     <main>
-        <!-- LAYOUT DE 3 COLUNAS -->
-        <div class="content-layout">
+        <!-- GRID DE 3 COLUNAS -->
+        <div class="dashboard-grid">
             
-            <!-- COLUNA ESQUERDA: FASE DA LUA + MARÉS -->
-            <div class="column-side">
-                <!-- 1. FASE DA LUA -->
-                <div class="info-card">
-                    <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
-                    <h3>Fase da Lua</h3>
-                    <div class="info-value" style="justify-content: center; font-size: 0.95rem; font-weight: 600; color: var(--primary-color);" id="itamarajuMoonPhase">Carregando...</div>
-                    <div class="info-value" style="justify-content: center; margin-top: 6px; color: #64748b; font-size: 0.85rem;" id="itamarajuMoonFullDays">--</div>
-                    <div class="info-value" style="justify-content: center; font-size: 0.82rem; color: #64748b; margin-top: 4px;" id="itamarajuNextPhases">--</div>
+            <!-- COLUNA ESQUERDA: LUA E MARÉS -->
+            <div class="side-column">
+                <div class="card">
+                    <h3>🌙 Fase da Lua</h3>
+                    <div style="text-align: center; margin-bottom: 0.8rem;">
+                        <span id="itamarajuMoonIcon" style="font-size: 2.5rem;">🌕</span>
+                        <div id="itamarajuMoonPhase" style="font-weight: 600; color: var(--primary-blue); margin-top: 5px;">Carregando...</div>
+                    </div>
+                    <div class="info-row" style="justify-content: center; font-size: 0.85rem; color: #64748b;" id="itamarajuMoonFullDays">--</div>
+                    <div style="font-size: 0.82rem; color: #64748b; text-align: center; margin-top: 4px;" id="itamarajuNextPhases">--</div>
                 </div>
 
-                <!-- 7. CARD DE MARÉS -->
-                <div class="info-card" style="border-top-color: var(--accent-blue);">
-                    <div class="astro-icon">🌊</div>
-                    <h3>Informações Marítimas</h3>
-                    <div class="info-value"><span>Preamar (Maré Alta):</span> <strong style="color: var(--primary-color);" id="tideHigh">04:15 / 16:40</strong></div>
-                    <div class="info-value"><span>Baixa-mar (Maré Baixa):</span> <strong style="color: var(--primary-color);" id="tideLow">10:25 / 22:50</strong></div>
-                    <div class="info-value" style="font-size: 0.82rem; color: #64748b; margin-top: 6px; justify-content: center;">Estado: <strong style="color: var(--primary-color);">Normal / Estável</strong></div>
+                <div class="card">
+                    <h3>🌊 Marés (Itamaraju/Região)</h3>
+                    <div class="info-row"><span>Preamar (Alta):</span> <span id="tideHigh">04:15 / 16:40</span></div>
+                    <div class="info-row"><span>Baixa-mar:</span> <span id="tideLow">10:25 / 22:50</span></div>
+                    <div class="info-row"><span>Condição:</span> <span>Estável</span></div>
                 </div>
             </div>
 
-            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU -->
+            <!-- COLUNA CENTRAL: ESTAÇÃO ITAMARAJU (ARDUINO) -->
             <div>
-                <section class="arduino-card">
-                    <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-                    <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 0.5rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
+                <div class="central-station">
+                    <h2>📍 Estação Meteorológica Local</h2>
+                    <p style="color: #64748b; font-size: 0.9rem;">Escola Crescer - Itamaraju/BA (Tempo Real)</p>
                     
-                    <div class="temp-arduino" id="arduinoTemp">--°C</div>
+                    <div class="temp-display" id="arduinoTemp">--°C</div>
                     
-                    <!-- MÁXIMA E MÍNIMA DE HOJE -->
-                    <div style="font-size: 0.92rem; color: #475569; margin-bottom: 0.8rem;">
-                        Máx: <strong style="color: var(--primary-color);" id="itamarajuTodayMax">--°C</strong> | Mín: <strong style="color: var(--primary-color);" id="itamarajuTodayMin">--°C</strong>
-                    </div>
-                    
-                    <div class="details" style="gap: 2rem; border-top: 1px solid #e2e8f0; padding-top: 0.8rem;">
-                        <div>Umidade: <strong style="color: var(--primary-color);" id="arduinoHumidity">--%</strong></div>
-                        <div>Vento: <strong style="color: var(--primary-color);" id="arduinoWind">-- km/h</strong></div>
+                    <div style="font-size: 1rem; color: #475569; margin-bottom: 1rem;">
+                        Máx Hoje: <strong id="itamarajuTodayMax" style="color: var(--primary-blue);">--°C</strong> | Mín Hoje: <strong id="itamarajuTodayMin" style="color: var(--primary-blue);">--°C</strong>
                     </div>
 
-                    <!-- NASCER E PÔR DO SOL INCLUÍDOS NO CARD DE ITAMARAJU -->
-                    <div style="margin-top: 0.8rem; font-size: 0.9rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 0.8rem;">
-                        ☀️ Nascer do sol: <strong style="color: var(--primary-color);" id="arduinoSunrise">--:--</strong> | 🌇 Pôr do sol: <strong style="color: var(--primary-color);" id="arduinoSunset">--:--</strong>
+                    <div class="details-grid">
+                        <div>Umidade: <strong id="arduinoHumidity" style="color: var(--primary-blue);">--%</strong></div>
+                        <div>Vento: <strong id="arduinoWind" style="color: var(--primary-blue);">-- km/h</strong></div>
                     </div>
 
-                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #dc2626; margin-top: 12px; font-weight: 600;">
-                        ⚠️ Arduino desconectado. Aguardando envio de dados...
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 0.8rem;">
+                        ☀️ Nascer do sol: <strong id="arduinoSunrise">--:--</strong> | 🌇 Pôr do sol: <strong id="arduinoSunset">--:--</strong>
+                    </div>
+
+                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #dc2626; margin-top: 15px; font-weight: 600;">
+                        ⚠️ Aguardando dados do Arduino...
                     </p>
-                </section>
+                </div>
             </div>
 
-            <!-- COLUNA DIREITA: INFORMAÇÕES DO DIA E NOITE -->
-            <div class="column-side">
-                <!-- 4. INFORMAÇÕES DO DIA E NOITE -->
-                <div class="info-card">
-                    <div class="astro-icon">☀️ 🌙</div>
-                    <h3>Informações do Dia e Noite</h3>
-                    <div style="text-align: left; margin-top: 4px; font-size: 0.88rem;">
-                        <p style="font-weight: 600; color: var(--primary-color); border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 6px;">☀️ Sol</p>
-                        <div class="info-value"><span>Nascer:</span> <strong style="color: var(--primary-color);" id="itamarajuSunrise">--:--</strong></div>
-                        <div class="info-value"><span>Zênite:</span> <strong style="color: var(--primary-color);" id="itamarajuSunZenith">--:--</strong></div>
-                        <div class="info-value"><span>Pôr do Sol:</span> <strong style="color: var(--primary-color);" id="itamarajuSunset">--:--</strong></div>
-                        
-                        <p style="font-weight: 600; color: var(--primary-color); border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-top: 10px; margin-bottom: 6px;">🌙 Lua</p>
-                        <div class="info-value"><span>Nascer da Lua:</span> <strong style="color: var(--primary-color);" id="moonriseTime">--:--</strong></div>
-                        <div class="info-value"><span>Culminação:</span> <strong style="color: var(--primary-color);" id="moonZenithTime">--:--</strong></div>
-                        <div class="info-value"><span>Ocaso da Lua:</span> <strong style="color: var(--primary-color);" id="moonsetTime">--:--</strong></div>
+            <!-- COLUNA DIREITA: INFORMAÇÕES DE SOL E LUA -->
+            <div class="side-column">
+                <div class="card">
+                    <h3>☀️ Sol e 🌙 Lua</h3>
+                    <div style="font-size: 0.88rem;">
+                        <p style="font-weight: 600; color: var(--primary-blue); border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; margin-bottom: 4px;">Sol</p>
+                        <div class="info-row"><span>Nascer:</span> <span id="itamarajuSunrise">--:--</span></div>
+                        <div class="info-row"><span>Zênite:</span> <span id="itamarajuSunZenith">--:--</span></div>
+                        <div class="info-row"><span>Pôr:</span> <span id="itamarajuSunset">--:--</span></div>
+
+                        <p style="font-weight: 600; color: var(--primary-blue); border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; margin-top: 10px; margin-bottom: 4px;">Lua</p>
+                        <div class="info-row"><span>Nascer:</span> <span id="moonriseTime">--:--</span></div>
+                        <div class="info-row"><span>Zênite:</span> <span id="moonZenithTime">--:--</span></div>
+                        <div class="info-row"><span>Ocaso:</span> <span id="moonsetTime">--:--</span></div>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
-        <h3 class="section-title" style="margin-top: 2.5rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
+        <!-- PREVISÃO 5 DIAS ITAMARAJU -->
+        <h3 class="section-title">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
         <div class="forecast-container" id="itamarajuForecastContainer"></div>
 
-        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #cbd5e1;">
-
-        <!-- CAMPO DE PESQUISA COM AUTOCOMPLETE -->
-        <h3 class="section-title">🔎 Consultar Outras Cidades</h3>
-        <div class="search-box">
-            <div class="search-box-wrapper">
-                <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Salvador, São Paulo)..." autocomplete="off" value="Porto Seguro">
-                <div id="suggestions" class="suggestions-list" style="display: none;"></div>
+        <!-- PESQUISA DE OUTRAS CIDADES -->
+        <div class="search-section">
+            <h3 class="section-title" style="margin-top: 0;">🔎 Consultar Outras Cidades</h3>
+            <div class="search-box">
+                <div style="position: relative; flex: 1;">
+                    <input type="text" id="cityInput" placeholder="Digite o nome da cidade (Ex: Salvador, São Paulo)..." autocomplete="off" value="Porto Seguro">
+                    <div id="suggestions" class="suggestions-list" style="display: none;"></div>
+                </div>
+                <button onclick="buscarClimaCidade()">Pesquisar</button>
             </div>
-            <button onclick="buscarClimaCidade()">Pesquisar</button>
+            <div id="errorArea" class="error-msg"></div>
+
+            <!-- RESULTADO DA CIDADE PESQUISADA -->
+            <div id="currentWeather" style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                <h2 id="cityName" style="color: var(--primary-blue); font-size: 1.4rem;">Porto Seguro</h2>
+                <div style="font-size: 3rem; font-weight: 700; color: var(--primary-blue); margin: 0.5rem 0;" id="currentTemp">--°C</div>
+                <div style="font-size: 0.95rem; color: #475569; margin-bottom: 0.5rem;">
+                    Máx: <strong id="searchTodayMax" style="color: var(--primary-blue);">--°C</strong> | Mín: <strong id="searchTodayMin" style="color: var(--primary-blue);">--°C</strong>
+                </div>
+                <p id="currentCondition" style="color: #64748b; font-size: 1rem; margin-bottom: 1rem;">Carregando...</p>
+                <div style="display: flex; justify-content: center; gap: 2rem; color: #475569; font-size: 0.95rem;">
+                    <div>Umidade: <strong id="currentHumidity" style="color: var(--primary-blue);">--%</strong></div>
+                    <div>Vento: <strong id="currentWind" style="color: var(--primary-blue);">-- km/h</strong></div>
+                </div>
+                <div style="margin-top: 0.8rem; font-size: 0.9rem; color: #64748b;">
+                    ☀️ Nascer do sol: <strong id="searchSunrise" style="color: var(--primary-blue);">--:--</strong> | 🌇 Pôr do sol: <strong id="searchSunset" style="color: var(--primary-blue);">--:--</strong>
+                </div>
+            </div>
         </div>
 
-        <div id="errorArea" class="error-msg" style="text-align: center;"></div>
-
-        <!-- RESULTADO DA CIDADE PESQUISADA -->
-        <div class="weather-card" id="currentWeather">
-            <h2 id="cityName">Porto Seguro - Bahia</h2>
-            <div class="temp" id="currentTemp">--°C</div>
-            <div style="font-size: 0.95rem; color: #475569; margin-top: -0.2rem; margin-bottom: 0.4rem;">
-                Máx: <strong style="color: var(--primary-color);" id="searchTodayMax">--°C</strong> | Mín: <strong style="color: var(--primary-color);" id="searchTodayMin">--°C</strong>
-            </div>
-            <p id="currentCondition" style="color: #64748b; font-size: 0.95rem;">Carregando...</p>
-            <div class="details">
-                <div>Umidade: <strong style="color: var(--primary-color);" id="currentHumidity">--%</strong></div>
-                <div>Vento: <strong style="color: var(--primary-color);" id="currentWind">-- km/h</strong></div>
-            </div>
-            <div style="margin-top: 1rem; font-size: 0.92rem; color: #64748b;">
-                ☀️ Nascer do sol: <strong style="color: var(--primary-color);" id="searchSunrise">--:--</strong> | 🌇 Pôr do sol: <strong style="color: var(--primary-color);" id="searchSunset">--:--</strong>
-            </div>
-        </div>
-
-        <!-- PREVISÃO 5 DIAS - CIDADE PESQUISADA -->
+        <!-- PREVISÃO 5 DIAS CIDADE PESQUISADA -->
         <h3 class="section-title">📅 Previsão para os Próximos 5 Dias (<span id="searchCityForecastName">Porto Seguro</span>)</h3>
         <div class="forecast-container" id="forecastContainer"></div>
 
         <!-- SEÇÃO DE NOTÍCIAS -->
-        <section class="news-section">
-            <h2>📰 Últimas Notícias do Brasil e do Mundo</h2>
-            <div class="news-grid" id="newsContainer">
-                <div class="news-item">
-                    <div>
-                        <h4>Carregando notícias em tempo real...</h4>
-                        <p>Aguarde um instante enquanto buscamos as principais atualizações globais e nacionais.</p>
-                    </div>
+        <h3 class="section-title">📰 Últimas Notícias</h3>
+        <div class="news-grid" id="newsContainer">
+            <div class="news-item">
+                <div>
+                    <h4>Carregando notícias...</h4>
+                    <p>Buscando atualizações recentes do clima e tecnologia educacional.</p>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <footer>
@@ -560,14 +476,10 @@
                 2: "Parcialmente nublado ⛅",
                 3: "Nublado ☁️",
                 45: "Nevoeiro 🌫️",
-                48: "Nevoeiro com geada 🌫️",
                 51: "Garoa leve 🌧️",
-                53: "Garoa moderada 🌧️",
-                55: "Garoa densa 🌧️",
                 61: "Chuva leve 🌦️",
                 63: "Chuva moderada 🌧️",
                 65: "Chuva forte 🌧️",
-                71: "Neve leve ❄️",
                 80: "Pancadas de chuva 🌦️",
                 95: "Tempestade ⛈️"
             };
@@ -632,9 +544,9 @@
                 card.innerHTML = `
                     <h4>${dateFormatted}</h4>
                     <p style="font-size: 0.8rem; margin-bottom: 6px; color: #475569;">${cond}</p>
-                    <p style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 600;">🌧️ ${probChuva}% chuva</p>
-                    <p style="margin-top: 6px;">Máx: <strong style="color: var(--primary-color);">${max}°C</strong></p>
-                    <p>Mín: <strong style="color: var(--primary-color);">${min}°C</strong></p>
+                    <p style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 600;">🌧️ ${probChuva}%</p>
+                    <p style="margin-top: 6px;">Máx: <strong style="color: var(--primary-blue);">${max}°C</strong></p>
+                    <p>Mín: <strong style="color: var(--primary-blue);">${min}°C</strong></p>
                 `;
                 container.appendChild(card);
                 count++;
@@ -661,15 +573,12 @@
                         
                         document.getElementById('itamarajuSunrise').innerText = sunriseTime;
                         document.getElementById('itamarajuSunset').innerText = sunsetTime;
-                        
                         document.getElementById('arduinoSunrise').innerText = sunriseTime;
                         document.getElementById('arduinoSunset').innerText = sunsetTime;
 
                         const [srH, srM] = sunriseTime.split(':').map(Number);
                         const [ssH, ssM] = sunsetTime.split(':').map(Number);
-                        const srTotalMins = srH * 60 + srM;
-                        const ssTotalMins = ssH * 60 + ssM;
-                        const zenithMins = Math.round((srTotalMins + ssTotalMins) / 2);
+                        const zenithMins = Math.round(((srH * 60 + srM) + (ssH * 60 + ssM)) / 2);
                         const zH = String(Math.floor(zenithMins / 60)).padStart(2, '0');
                         const zM = String(zenithMins % 60).padStart(2, '0');
                         document.getElementById('itamarajuSunZenith').innerText = `${zH}:${zM}`;
@@ -713,15 +622,7 @@
             ];
 
             let diasParaCheia = Math.round(14.76 - phaseVal);
-            let textoCheia = "";
-            if (diasParaCheia === 0) {
-                textoCheia = "🌕 É Lua Cheia hoje!";
-            } else if (diasParaCheia > 0) {
-                textoCheia = `Faltam ${diasParaCheia} dias para a Lua Cheia`;
-            } else {
-                let diasProximaCheia = Math.round(29.53 - phaseVal);
-                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Lua Cheia`;
-            }
+            let textoCheia = diasParaCheia === 0 ? "🌕 É Lua Cheia hoje!" : (diasParaCheia > 0 ? `Faltam ${diasParaCheia} dias p/ Cheia` : `Próxima Lua Cheia em breve`);
 
             document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;
             document.getElementById('itamarajuMoonIcon').innerText = fases[phaseIndex].icone;
@@ -729,12 +630,9 @@
             document.getElementById('itamarajuNextPhases').innerText = `Próxima: ${fases[phaseIndex].proxima}`;
 
             let moonriseH = (6 + Math.round(phaseVal * 0.8)) % 24;
-            let moonzenH = (moonriseH + 6) % 24;
-            let moonsetH = (moonriseH + 12) % 24;
-            
             document.getElementById('moonriseTime').innerText = `${String(moonriseH).padStart(2, '0')}:30`;
-            document.getElementById('moonZenithTime').innerText = `${String(moonzenH).padStart(2, '0')}:15`;
-            document.getElementById('moonsetTime').innerText = `${String(moonsetH).padStart(2, '0')}:45`;
+            document.getElementById('moonZenithTime').innerText = `${String((moonriseH + 6) % 24).padStart(2, '0')}:15`;
+            document.getElementById('moonsetTime').innerText = `${String((moonriseH + 12) % 24).padStart(2, '0')}:45`;
         }
 
         async function lidarComDigitacao(e) {
@@ -769,7 +667,6 @@
                     suggestionsBox.style.display = 'none';
                 }
             } catch (err) {
-                console.error("Erro no autocomplete:", err);
                 suggestionsBox.style.display = 'none';
             }
         }
@@ -789,22 +686,18 @@
                 const geoData = await geoRes.json();
 
                 if (!geoData.results || geoData.results.length === 0) {
-                    if (errorArea) errorArea.innerText = 'Cidade não encontrada. Tente digitar novamente.';
-                    document.getElementById('currentCondition').innerText = 'Cidade não encontrada';
+                    if (errorArea) errorArea.innerText = 'Cidade não encontrada.';
+                    document.getElementById('currentCondition').innerText = 'Não encontrada';
                     return;
                 }
 
                 const loc = geoData.results[0];
-                const lat = loc.latitude;
-                const lon = loc.longitude;
-                const nomeExibicao = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''} (${loc.country || ''})`;
-
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=America%2FSao_Paulo&forecast_days=6`;
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=America%2FSao_Paulo&forecast_days=6`;
                 const weatherRes = await fetch(weatherUrl);
                 const weatherData = await weatherRes.json();
 
                 if (weatherData && weatherData.current) {
-                    document.getElementById('cityName').innerText = nomeExibicao;
+                    document.getElementById('cityName').innerText = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''}`;
                     document.getElementById('currentTemp').innerText = `${Math.round(weatherData.current.temperature_2m)}°C`;
                     document.getElementById('currentHumidity').innerText = `${weatherData.current.relative_humidity_2m}%`;
                     document.getElementById('currentWind').innerText = `${Math.round(weatherData.current.wind_speed_10m)} km/h`;
@@ -815,7 +708,7 @@
                         document.getElementById('searchSunset').innerText = weatherData.daily.sunset[0].split('T')[1];
                     }
 
-                    if (weatherData.daily && weatherData.daily.temperature_2m_max && weatherData.daily.temperature_2m_min) {
+                    if (weatherData.daily && weatherData.daily.temperature_2m_max) {
                         document.getElementById('searchTodayMax').innerText = `${Math.round(weatherData.daily.temperature_2m_max[0])}°C`;
                         document.getElementById('searchTodayMin').innerText = `${Math.round(weatherData.daily.temperature_2m_min[0])}°C`;
                     }
@@ -825,28 +718,27 @@
                 }
             } catch (err) {
                 if (errorArea) errorArea.innerText = 'Erro ao buscar dados meteorológicos.';
-                document.getElementById('currentCondition').innerText = 'Erro ao carregar';
             }
         }
 
-        async function carregarNoticiasFicticias() {
+        async function carregarNoticias() {
             const container = document.getElementById('newsContainer');
             if (!container) return;
 
             const noticias = [
                 {
-                    titulo: "Tecnologia IoT na Educação: Alunos constroem estação meteorológica",
-                    descricao: "Estudantes da Escola Crescer em Itamaraju integram sensores físicos de Arduino a painéis em nuvem com Supabase.",
+                    titulo: "Tecnologia IoT na Educação: Alunos constroem estação",
+                    descricao: "Estudantes da Escola Crescer integram sensores físicos de Arduino a painéis em nuvem.",
                     link: "#"
                 },
                 {
-                    titulo: "Previsão Climática para o Sul da Bahia nos Próximos Dias",
-                    descricao: "Meteorologistas apontam variações na umidade e períodos de sol predominante na região de Itamaraju.",
+                    titulo: "Previsão Climática para o Sul da Bahia",
+                    descricao: "Meteorologistas apontam variações na umidade e períodos de sol predominante.",
                     link: "#"
                 },
                 {
-                    titulo: "Importância do Monitoramento Ambiental Urbano",
-                    descricao: "Iniciativas escolares de monitoramento do tempo aproximam a teoria científica da realidade local.",
+                    titulo: "Monitoramento Ambiental Urbano",
+                    descricao: "Iniciativas escolares aproximam a teoria científica da realidade local.",
                     link: "#"
                 }
             ];
@@ -860,7 +752,7 @@
                         <h4>${n.titulo}</h4>
                         <p>${n.descricao}</p>
                     </div>
-                    <a href="${n.link}" onclick="event.preventDefault(); alert('Leitura completa da notícia em breve!');">Ler mais &rarr;</a>
+                    <a href="${n.link}" onclick="event.preventDefault(); alert('Em breve!');">Ler mais &rarr;</a>
                 `;
                 container.appendChild(item);
             });
@@ -870,7 +762,7 @@
             getItamarajuAstroAndForecast();
             buscarDadosItamaraju();
             buscarClimaCidade('Porto Seguro');
-            carregarNoticiasFicticias();
+            carregarNoticias();
 
             const cityInput = document.getElementById('cityInput');
             if (cityInput) {
@@ -880,10 +772,7 @@
                 });
             }
 
-            // Atualiza os dados do Arduino e Itamaraju a cada 30 segundos
-            setInterval(() => {
-                buscarDadosItamaraju();
-            }, 30000);
+            setInterval(buscarDadosItamaraju, 30000);
         });
     </script>
 </body>

@@ -34,24 +34,24 @@
             line-height: 1.6;
         }
 
-        /* CABEÇALHO COM LOGO À DIREITA MAIOR E DENTRO DA FAIXA AZUL */
+        /* CABEÇALHO */
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 0.5rem 2rem;
+            padding: 0.6rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 4px solid var(--secondary-color);
-            overflow: hidden; /* Garante que nada passe da faixa azul */
+            overflow: hidden;
         }
 
         header h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
 
         .header-logo {
-            height: 75px; /* Aumentada conforme pedido */
+            height: 75px;
             width: 75px;
             border-radius: 50%;
             background-color: white;
@@ -70,20 +70,20 @@
         }
 
         main {
-            max-width: 98%;
-            margin: 1.5rem auto;
-            padding: 0 0.5rem;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 2rem; /* Mais respiro nas bordas da tela em 100% de zoom */
         }
 
-        /* LAYOUT DE 3 COLUNAS: LARGURA TOTAL COM CENTRO MAIOR */
+        /* LAYOUT DE 3 COLUNAS: LATERAIS FIXAS CONFORTÁVEIS E CENTRO AMPLIADO */
         .content-layout {
             display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            gap: 1rem;
+            grid-template-columns: 320px 1fr 320px;
+            gap: 1.5rem;
             align-items: stretch;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1100px) {
             .content-layout {
                 grid-template-columns: 1fr;
             }
@@ -92,12 +92,12 @@
         .column-side {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .info-card {
             background: var(--card-bg);
-            padding: 1.2rem;
+            padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-top: 3px solid var(--primary-color);
@@ -109,26 +109,26 @@
 
         .info-card h3 {
             color: var(--primary-color);
-            font-size: 1.05rem;
-            margin-bottom: 0.6rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
         }
 
         .info-value {
-            font-size: 0.88rem;
+            font-size: 0.95rem;
             color: #333;
-            margin: 0.2rem 0;
+            margin: 0.3rem 0;
         }
 
         .astro-icon {
-            font-size: 2rem;
-            margin-bottom: 0.2rem;
+            font-size: 2.2rem;
+            margin-bottom: 0.4rem;
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU (CENTRO MAIOR) */
+        /* CARD DO ARDUINO / ITAMARAJU (CENTRO MAIOR E COM ESPAÇO) */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(157, 0, 255, 0.15);
             text-align: center;
@@ -140,8 +140,8 @@
 
         .arduino-card h2 {
             color: var(--primary-color);
-            margin-bottom: 0.3rem;
-            font-size: 1.3rem;
+            margin-bottom: 0.4rem;
+            font-size: 1.4rem;
         }
 
         /* PESQUISA E AUTOCOMPLETE */
@@ -212,7 +212,7 @@
 
         .weather-card {
             background: var(--card-bg);
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             text-align: center;
@@ -225,7 +225,7 @@
         }
 
         .temp {
-            font-size: 3.5rem;
+            font-size: 4rem;
             font-weight: bold;
             color: var(--secondary-color);
             margin: 0.5rem 0;
@@ -235,16 +235,16 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 2rem;
+            gap: 2.5rem;
             margin-top: 1.5rem;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: #555;
         }
 
         .forecast-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
+            gap: 1.2rem;
             margin-bottom: 2.5rem;
         }
 
@@ -260,7 +260,7 @@
 
         .forecast-card {
             background: var(--card-bg);
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -274,7 +274,7 @@
 
         .news-section {
             background: var(--card-bg);
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-top: 3rem;
@@ -296,7 +296,7 @@
         .news-item {
             background: #fdfdfd;
             border: 1px solid #e2e8f0;
-            padding: 1.2rem;
+            padding: 1.5rem;
             border-radius: 6px;
             display: flex;
             flex-direction: column;
@@ -310,13 +310,13 @@
         }
 
         .news-item h4 {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: #222;
             margin-bottom: 0.5rem;
         }
 
         .news-item p {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #666;
             margin-bottom: 1rem;
         }
@@ -325,7 +325,7 @@
             color: var(--primary-color);
             font-weight: bold;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             align-self: flex-start;
         }
 
@@ -339,7 +339,7 @@
             margin-top: 3rem;
             background-color: #e2e8f0;
             color: #666;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
         .error-msg {
@@ -351,13 +351,13 @@
         .section-title {
             margin-bottom: 1rem;
             color: var(--primary-color);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO COM LOGO À DIREITA -->
+    <!-- CABEÇALHO -->
     <header>
         <h1>Site meteorológico Escola Crescer</h1>
         <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
@@ -368,7 +368,7 @@
     </div>
 
     <main>
-        <!-- LAYOUT DE 3 COLUNAS (LARGURA AMPLIADA E CENTRO DESTAQUE) -->
+        <!-- LAYOUT DE 3 COLUNAS -->
         <div class="content-layout">
             
             <!-- COLUNA ESQUERDA: FASE DA LUA + MARÉS -->
@@ -377,9 +377,9 @@
                 <div class="info-card">
                     <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
                     <h3>Fase da Lua</h3>
-                    <div class="info-value" id="itamarajuMoonPhase" style="font-size: 1.05rem; font-weight: bold;">Carregando...</div>
-                    <div class="info-value" id="itamarajuMoonFullDays" style="margin-top: 6px; color: #555;">--</div>
-                    <div class="info-value" id="itamarajuNextPhases" style="font-size: 0.82rem; color: #666; margin-top: 4px;">--</div>
+                    <div class="info-value" id="itamarajuMoonPhase" style="font-size: 1.1rem; font-weight: bold;">Carregando...</div>
+                    <div class="info-value" id="itamarajuMoonFullDays" style="margin-top: 8px; color: #555;">--</div>
+                    <div class="info-value" id="itamarajuNextPhases" style="font-size: 0.85rem; color: #666; margin-top: 6px;">--</div>
                 </div>
 
                 <!-- 7. CARD DE MARÉS / INFORMAÇÕES MARÍTIMAS -->
@@ -388,15 +388,15 @@
                     <h3>Informações Marítimas & Marés</h3>
                     <div class="info-value">Preamar (Maré Alta): <strong id="tideHigh">04:15 / 16:40</strong></div>
                     <div class="info-value">Baixa-mar (Maré Baixa): <strong id="tideLow">10:25 / 22:50</strong></div>
-                    <div class="info-value" style="font-size: 0.8rem; color: #555; margin-top: 6px;">Coeficiente / Estado: <strong>Normal / Estável</strong></div>
+                    <div class="info-value" style="font-size: 0.85rem; color: #555; margin-top: 8px;">Coeficiente / Estado: <strong>Normal / Estável</strong></div>
                 </div>
             </div>
 
-            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU (MAIOR) -->
+            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU (DESTAQUE MAIOR) -->
             <div>
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
+                    <p style="font-size: 0.95rem; color: #666; margin-bottom: 1.2rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
                     
                     <div class="temp" id="arduinoTemp">--°C</div>
                     
@@ -405,7 +405,7 @@
                         <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
                     </div>
 
-                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #d32f2f; margin-top: 25px; font-weight: bold;">
+                    <p id="arduinoStatus" style="font-size: 0.9rem; color: #d32f2f; margin-top: 30px; font-weight: bold;">
                         ⚠️ Arduino desconectado. Aguardando envio de dados...
                     </p>
                 </section>
@@ -413,17 +413,17 @@
 
             <!-- COLUNA DIREITA: INFORMAÇÕES DO DIA E NOITE -->
             <div class="column-side">
-                <!-- 4. INFORMAÇÕES DO DIA E NOITE (SOL E LUA NO TOPO) -->
+                <!-- 4. INFORMAÇÕES DO DIA E NOITE -->
                 <div class="info-card">
                     <div class="astro-icon">☀️ 🌙</div>
                     <h3>Informações do Dia e Noite</h3>
-                    <div style="text-align: left; margin-top: 5px; font-size: 0.88rem;">
-                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 3px; margin-bottom: 4px;">☀️ Sol</p>
+                    <div style="text-align: left; margin-top: 8px; font-size: 0.9rem;">
+                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 6px;">☀️ Sol</p>
                         <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
                         <div class="info-value">Zênite (Topo): <span id="itamarajuSunZenith">--:--</span></div>
                         <div class="info-value">Pôr do Sol: <span id="itamarajuSunset">--:--</span></div>
                         
-                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 3px; margin-top: 10px; margin-bottom: 4px;">🌙 Lua</p>
+                        <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 4px; margin-top: 12px; margin-bottom: 6px;">🌙 Lua</p>
                         <div class="info-value">Nascer da Lua: <span id="moonriseTime">--:--</span></div>
                         <div class="info-value">Culminação (Topo): <span id="moonZenithTime">--:--</span></div>
                         <div class="info-value">Ocaso da Lua: <span id="moonsetTime">--:--</span></div>
@@ -434,10 +434,10 @@
         </div>
 
         <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
-        <h3 class="section-title" style="margin-top: 2.5rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
+        <h3 class="section-title" style="margin-top: 3rem;">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
         <div class="forecast-container" id="itamarajuForecastContainer"></div>
 
-        <hr style="margin: 2rem 0; border: none; border-top: 1px dashed #ccc;">
+        <hr style="margin: 2.5rem 0; border: none; border-top: 1px dashed #ccc;">
 
         <!-- CAMPO DE PESQUISA COM AUTOCOMPLETE -->
         <h3 class="section-title">🔎 Consultar Outras Cidades</h3>
@@ -460,7 +460,7 @@
                 <div>Umidade: <strong id="currentHumidity">--%</strong></div>
                 <div>Vento: <strong id="currentWind">-- km/h</strong></div>
             </div>
-            <div style="margin-top: 1rem; font-size: 0.9rem; color: #555;">
+            <div style="margin-top: 1.2rem; font-size: 0.95rem; color: #555;">
                 ☀️ Nascer do sol: <strong id="searchSunrise">--:--</strong> | 🌇 Pôr do sol: <strong id="searchSunset">--:--</strong>
             </div>
         </div>

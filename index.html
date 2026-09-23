@@ -388,8 +388,15 @@
             buscarDadosItamaraju(); // Carrega Itamaraju fixo
             getWeatherData();        // Carrega a cidade inicial da busca (Salvador)
 
-            // Atualiza os dados de Itamaraju automaticamente a cada 5 segundos
-            setInterval(buscarDadosItamaraju, 5000);
+            // Permite pesquisar ao pressionar a tecla Enter no campo de busca
+            document.getElementById('cityInput').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    getWeatherData();
+                }
+            });
+
+            // Atualiza os dados de Itamaraju automaticamente a cada 1 Minuto
+            setInterval(buscarDadosItamaraju, 60000);
         };
     </script>
 </body>

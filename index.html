@@ -75,7 +75,7 @@
             padding: 0 1rem;
         }
 
-        /* LAYOUT PRINCIPAL: ESQUERDA (SOL/LUA/ARDUINO) E DIREITA (CONTEÚDO) */
+        /* LAYOUT PRINCIPAL: ESQUERDA (SOL/LUA) E DIREITA (ARDUINO) */
         .content-layout {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -619,24 +619,27 @@
             }
         }
 
+        // ==========================================
+        // NOTÍCIAS ATUALIZADAS VIA RSS2JSON API
+        // ==========================================
         async function carregarNoticias() {
             const newsContainer = document.getElementById('newsContainer');
             try {
-                const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419'));
+                const rssUrl = 'https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419';
+                const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+                
+                const res = await fetch(apiUrl);
                 const data = await res.json();
                 
-                if (data && data.contents) {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
-                    const items = xmlDoc.querySelectorAll('item');
-
+                if (data && data.status === 'ok' && data.items) {
                     newsContainer.innerHTML = '';
                     let count = 0;
 
-                    for (let i = 0; i < items.length && count < 4; i++) {
-                        const title = items[i].querySelector('title')?.textContent || 'Sem título';
-                        const link = items[i].querySelector('link')?.textContent || '#';
-                        const pubDate = items[i].querySelector('pubDate')?.textContent || '';
+                    for (let i = 0; i < data.items.length && count < 4; i++) {
+                        const item = data.items[i];
+                        const title = item.title || 'Sem título';
+                        const link = item.link || '#';
+                        const pubDate = item.pubDate || '';
                         
                         const dateObj = new Date(pubDate);
                         const timeFormatted = !isNaN(dateObj) ? dateObj.toLocaleDateString('pt-BR') + ' às ' + dateObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}) : '';
@@ -653,10 +656,12 @@
                         newsContainer.appendChild(newsCard);
                         count++;
                     }
+                } else {
+                    newsContainer.innerHTML = `<p style="color: #666; grid-column: span 2; text-align: center;">Não foi possível carregar as notícias no momento.</p>`;
                 }
             } catch (err) {
                 console.error("Erro ao carregar notícias:", err);
-                newsContainer.innerHTML = `<p style="color: #666; grid-column: span 2; text-align: center;">Não foi possível carregar o feed de notícias no momento.</p>`;
+                newsContainer.innerHTML = `<p style="color: #666; grid-column: span 2; text-align: center;">Erro de conexão ao buscar o feed de notícias.</p>`;
             }
         }
 

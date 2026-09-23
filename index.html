@@ -657,10 +657,10 @@
             if (diasParaCheia === 0) {
                 textoCheia = "🌕 É Lua Cheia hoje!";
             } else if (diasParaCheia > 0) {
-                textoCheia = `Faltam ${diasParaCheia} dias para a Cheia`;
+                textoCheia = `Faltam ${diasParaCheia} dias para a Lua Cheia`;
             } else {
                 let diasProximaCheia = Math.round(29.53 - phaseVal);
-                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Cheia`;
+                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Lua Cheia`;
             }
 
             document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;

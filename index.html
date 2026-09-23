@@ -403,8 +403,8 @@
                 <div class="info-card" style="border-top-color: #0284c7;">
                     <div class="astro-icon">🌊</div>
                     <h3>Informações Marítimas</h3>
-                    <div class="info-value"><span>Preamar (Alta):</span> <strong id="tideHigh">04:15 / 16:40</strong></div>
-                    <div class="info-value"><span>Baixa-mar:</span> <strong id="tideLow">10:25 / 22:50</strong></div>
+                    <div class="info-value"><span>Preamar (Maré Alta):</span> <strong id="tideHigh">04:15 / 16:40</strong></div>
+                    <div class="info-value"><span>Baixa-mar (Maré Baixa):</span> <strong id="tideLow">10:25 / 22:50</strong></div>
                     <div class="info-value" style="font-size: 0.8rem; color: #64748b; margin-top: 4px; justify-content: center;">Estado: <strong>Normal / Estável</strong></div>
                 </div>
             </div>
@@ -677,10 +677,10 @@
             if (diasParaCheia === 0) {
                 textoCheia = "🌕 É Lua Cheia hoje!";
             } else if (diasParaCheia > 0) {
-                textoCheia = `Faltam ${diasParaCheia} dias para a Cheia`;
+                textoCheia = `Faltam ${diasParaCheia} dias para a Lua Cheia`;
             } else {
                 let diasProximaCheia = Math.round(29.53 - phaseVal);
-                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Cheia`;
+                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Lua Cheia`;
             }
 
             document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;

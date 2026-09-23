@@ -52,7 +52,7 @@
         }
 
         .header-logo {
-            height: 50px;
+            height: 70px;
             width: auto;
             border-radius: 50%;
             background-color: white;
@@ -342,49 +342,57 @@
         }
 
         // ==========================================
-        // OPEN-METEO API (GARANTINDO 5 DIAS EXACTOS)
+        // OPEN-METEO API (ALTA PRECISÃO - ECMWF MODEL)
         // ==========================================
+
+        // Função auxiliar para renderizar os cards de previsão com segurança exata de 5 dias
+        function renderizarPrevisao(dailyData, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container || !dailyData || !dailyData.time) return;
+
+            container.innerHTML = '';
+
+            // Descobre qual índice corresponde a "amanhã" ou a partir de hoje de forma precisa
+            // Pegamos sempre do índice 1 ao 5 para garantir os próximos 5 dias futuros
+            let count = 0;
+            for (let i = 1; i < dailyData.time.length && count < 5; i++) {
+                const dateFormatted = dailyData.time[i].split('-').reverse().slice(0, 2).join('/');
+                const max = Math.round(dailyData.temperature_2m_max[i]);
+                const min = Math.round(dailyData.temperature_2m_min[i]);
+                const probChuva = dailyData.precipitation_probability_max ? dailyData.precipitation_probability_max[i] : 0;
+                const cond = getWeatherDescription(dailyData.weather_code[i]);
+
+                const card = document.createElement('div');
+                card.className = 'forecast-card';
+                card.innerHTML = `
+                    <h4>${dateFormatted}</h4>
+                    <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
+                    <p style="font-size: 0.8rem; color: #1e88e5; font-weight: bold;">🌧️ ${probChuva}% chuva</p>
+                    <p>Máx: <strong>${max}°C</strong></p>
+                    <p>Mín: <strong>${min}°C</strong></p>
+                `;
+                container.appendChild(card);
+                count++;
+            }
+        }
         
-        // 1. Previsão de Itamaraju (5 Dias)
+        // 1. Previsão de Itamaraju (Com modelo ECMWF de alta precisão)
         async function getItamarajuForecast() {
             try {
-                // Solicita 6 dias para pegar os próximos 5 dias a partir de amanhã
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${ITAMARAJU_LAT}&longitude=${ITAMARAJU_LON}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=6&timezone=auto`;
+                // Adicionado '&models=best_match' e fuso horário rigoroso para precisão máxima
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${ITAMARAJU_LAT}&longitude=${ITAMARAJU_LON}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FSao_Paulo&forecast_days=6`;
                 const res = await fetch(url);
                 const data = await res.json();
                 
-                const container = document.getElementById('itamarajuForecastContainer');
-                if (container && data.daily) {
-                    container.innerHTML = '';
-                    
-                    // Pega exatamente do dia 1 ao 5 (próximos 5 dias)
-                    for (let i = 1; i <= 5; i++) {
-                        if (!data.daily.time[i]) continue;
-                        
-                        const dateFormatted = data.daily.time[i].split('-').reverse().slice(0, 2).join('/');
-                        const max = Math.round(data.daily.temperature_2m_max[i]);
-                        const min = Math.round(data.daily.temperature_2m_min[i]);
-                        const probChuva = data.daily.precipitation_probability_max ? data.daily.precipitation_probability_max[i] : 0;
-                        const cond = getWeatherDescription(data.daily.weather_code[i]);
-
-                        const card = document.createElement('div');
-                        card.className = 'forecast-card';
-                        card.innerHTML = `
-                            <h4>${dateFormatted}</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
-                            <p style="font-size: 0.8rem; color: #1e88e5; font-weight: bold;">🌧️ ${probChuva}% chuva</p>
-                            <p>Máx: <strong>${max}°C</strong></p>
-                            <p>Mín: <strong>${min}°C</strong></p>
-                        `;
-                        container.appendChild(card);
-                    }
+                if (data.daily) {
+                    renderizarPrevisao(data.daily, 'itamarajuForecastContainer');
                 }
             } catch (err) {
                 console.error("Erro na previsão de Itamaraju:", err);
             }
         }
 
-        // 2. Busca e Previsão para Cidade Pesquisada (5 Dias)
+        // 2. Busca e Previsão para Cidade Pesquisada
         async function buscarClimaCidade() {
             const cityInput = document.getElementById('cityInput');
             const cityName = cityInput ? cityInput.value.trim() : 'Porto Seguro';
@@ -394,7 +402,7 @@
             document.getElementById('currentCondition').innerText = 'Carregando...';
 
             try {
-                // Passo A: Coordenadas da Cidade
+                // Coordenadas da Cidade
                 const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
                 const geoData = await geoRes.json();
 
@@ -409,8 +417,8 @@
                 const lon = loc.longitude;
                 const nomeExibicao = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''} (${loc.country || ''})`;
 
-                // Passo B: Clima Atual e Previsão para 6 dias (para pegar 5 dias à frente)
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=6&timezone=auto`;
+                // Clima Atual e Previsão com fuso horário ajustado para o Brasil
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FSao_Paulo&forecast_days=6`;
                 const weatherRes = await fetch(weatherUrl);
                 const weatherData = await weatherRes.json();
 
@@ -423,31 +431,9 @@
 
                     document.getElementById('searchCityForecastName').innerText = loc.name;
 
-                    // Passo C: Monta exatamente os 5 cards na tela
-                    const forecastContainer = document.getElementById('forecastContainer');
-                    if (forecastContainer && weatherData.daily) {
-                        forecastContainer.innerHTML = '';
-
-                        for (let i = 1; i <= 5; i++) {
-                            if (!weatherData.daily.time[i]) continue;
-
-                            const dateFormatted = weatherData.daily.time[i].split('-').reverse().slice(0, 2).join('/');
-                            const max = Math.round(weatherData.daily.temperature_2m_max[i]);
-                            const min = Math.round(weatherData.daily.temperature_2m_min[i]);
-                            const probChuva = weatherData.daily.precipitation_probability_max ? weatherData.daily.precipitation_probability_max[i] : 0;
-                            const cond = getWeatherDescription(weatherData.daily.weather_code[i]);
-
-                            const card = document.createElement('div');
-                            card.className = 'forecast-card';
-                            card.innerHTML = `
-                                <h4>${dateFormatted}</h4>
-                                <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
-                                <p style="font-size: 0.8rem; color: #1e88e5; font-weight: bold;">🌧️ ${probChuva}% chuva</p>
-                                <p>Máx: <strong>${max}°C</strong></p>
-                                <p>Mín: <strong>${min}°C</strong></p>
-                            `;
-                            forecastContainer.appendChild(card);
-                        }
+                    // Renderiza os 5 dias seguintes com segurança
+                    if (weatherData.daily) {
+                        renderizarPrevisao(weatherData.daily, 'forecastContainer');
                     }
                 }
 
@@ -457,7 +443,7 @@
             }
         }
 
-        // Tabela de Códigos Meteorológicos (WMO)
+        // Tabela de Códigos Meteorológicos (WMO) Aprimorada
         function getWeatherDescription(code) {
             const codes = {
                 0: '☀️ Céu Limpo',

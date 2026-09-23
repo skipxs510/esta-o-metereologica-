@@ -130,34 +130,6 @@
             background-color: #1c2e66;
         }
 
-        .suggestions-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: none;
-        }
-
-        .suggestion-item {
-            padding: 10px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #eee;
-        }
-
-        .suggestion-item:hover {
-            background-color: #f3e8ff;
-            color: var(--primary-color);
-        }
-
         .weather-card {
             background: var(--card-bg);
             padding: 2rem;
@@ -189,11 +161,18 @@
             color: #555;
         }
 
+        /* GRID PARA OS 5 DIAS */
         .forecast-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 1rem;
             margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .forecast-container {
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            }
         }
 
         .forecast-card {
@@ -262,7 +241,7 @@
         </section>
 
         <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
-        <h3 class="section-title">📅 Previsão para os Próximos Dias em Itamaraju/BA</h3>
+        <h3 class="section-title">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
         <div class="forecast-container" id="itamarajuForecastContainer">
             <!-- Previsão de Itamaraju criada via JS -->
         </div>
@@ -274,7 +253,6 @@
         <div class="search-box">
             <div class="search-box-wrapper">
                 <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Porto Seguro, Salvador)..." autocomplete="off" value="Porto Seguro">
-                <div id="suggestions" class="suggestions-list"></div>
             </div>
             <button onclick="buscarClimaCidade()">Pesquisar</button>
         </div>
@@ -293,7 +271,7 @@
         </div>
 
         <!-- PREVISÃO 5 DIAS - CIDADE PESQUISADA -->
-        <h3 class="section-title">📅 Previsão para os Próximos Dias (<span id="searchCityForecastName">Porto Seguro</span>)</h3>
+        <h3 class="section-title">📅 Previsão para os Próximos 5 Dias (<span id="searchCityForecastName">Porto Seguro</span>)</h3>
         <div class="forecast-container" id="forecastContainer">
             <!-- Previsão da cidade pesquisada criada via JS -->
         </div>
@@ -304,6 +282,10 @@
     </footer>
 
     <script>
+        // Coordenadas de Itamaraju/BA
+        const ITAMARAJU_LAT = -17.0397;
+        const ITAMARAJU_LON = -39.5311;
+
         // ==========================================
         // SUPABASE: CONSULTA DO ARDUINO
         // ==========================================
@@ -360,43 +342,49 @@
         }
 
         // ==========================================
-        // CONSULTA CLIMÁTICA VIA API (WTTR.IN - 100% CONFIÁVEL)
+        // OPEN-METEO API (GARANTINDO 5 DIAS EXACTOS)
         // ==========================================
         
-        // 1. Previsão de Itamaraju
+        // 1. Previsão de Itamaraju (5 Dias)
         async function getItamarajuForecast() {
             try {
-                const res = await fetch(`https://wttr.in/Itamaraju?format=j1`);
+                // Solicita 6 dias para pegar os próximos 5 dias a partir de amanhã
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${ITAMARAJU_LAT}&longitude=${ITAMARAJU_LON}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=6&timezone=auto`;
+                const res = await fetch(url);
                 const data = await res.json();
                 
                 const container = document.getElementById('itamarajuForecastContainer');
-                if (container && data.weather) {
+                if (container && data.daily) {
                     container.innerHTML = '';
                     
-                    // Pega os próximos dias fornecidos pela API
-                    data.weather.slice(0, 5).forEach(day => {
-                        const dateFormatted = day.date.split('-').reverse().slice(0, 2).join('/');
-                        const max = day.maxtempC;
-                        const min = day.mintempC;
-                        const cond = traduzirCondicao(day.hourly[4].weatherDesc[0].value);
+                    // Pega exatamente do dia 1 ao 5 (próximos 5 dias)
+                    for (let i = 1; i <= 5; i++) {
+                        if (!data.daily.time[i]) continue;
+                        
+                        const dateFormatted = data.daily.time[i].split('-').reverse().slice(0, 2).join('/');
+                        const max = Math.round(data.daily.temperature_2m_max[i]);
+                        const min = Math.round(data.daily.temperature_2m_min[i]);
+                        const probChuva = data.daily.precipitation_probability_max ? data.daily.precipitation_probability_max[i] : 0;
+                        const cond = getWeatherDescription(data.daily.weather_code[i]);
 
                         const card = document.createElement('div');
                         card.className = 'forecast-card';
                         card.innerHTML = `
                             <h4>${dateFormatted}</h4>
                             <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
+                            <p style="font-size: 0.8rem; color: #1e88e5; font-weight: bold;">🌧️ ${probChuva}% chuva</p>
                             <p>Máx: <strong>${max}°C</strong></p>
                             <p>Mín: <strong>${min}°C</strong></p>
                         `;
                         container.appendChild(card);
-                    });
+                    }
                 }
             } catch (err) {
                 console.error("Erro na previsão de Itamaraju:", err);
             }
         }
 
-        // 2. Busca de qualquer cidade pesquisada
+        // 2. Busca e Previsão para Cidade Pesquisada (5 Dias)
         async function buscarClimaCidade() {
             const cityInput = document.getElementById('cityInput');
             const cityName = cityInput ? cityInput.value.trim() : 'Porto Seguro';
@@ -406,68 +394,99 @@
             document.getElementById('currentCondition').innerText = 'Carregando...';
 
             try {
-                const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`);
-                if (!res.ok) throw new Error('Cidade não encontrada');
+                // Passo A: Coordenadas da Cidade
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
+                const geoData = await geoRes.json();
 
-                const data = await res.json();
-                const current = data.current_condition[0];
-                const area = data.nearest_area[0];
+                if (!geoData.results || geoData.results.length === 0) {
+                    if (errorArea) errorArea.innerText = 'Cidade não encontrada. Tente digitar novamente.';
+                    document.getElementById('currentCondition').innerText = 'Cidade não encontrada';
+                    return;
+                }
 
-                const nomeFormatado = `${area.areaName[0].value}, ${area.region[0].value} (${area.country[0].value})`;
-                
-                document.getElementById('cityName').innerText = nomeFormatado;
-                document.getElementById('currentTemp').innerText = `${current.temp_C}°C`;
-                document.getElementById('currentHumidity').innerText = `${current.humidity}%`;
-                document.getElementById('currentWind').innerText = `${current.windspeedKmph} km/h`;
-                document.getElementById('currentCondition').innerText = traduzirCondicao(current.weatherDesc[0].value);
+                const loc = geoData.results[0];
+                const lat = loc.latitude;
+                const lon = loc.longitude;
+                const nomeExibicao = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''} (${loc.country || ''})`;
 
-                document.getElementById('searchCityForecastName').innerText = area.areaName[0].value;
+                // Passo B: Clima Atual e Previsão para 6 dias (para pegar 5 dias à frente)
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=6&timezone=auto`;
+                const weatherRes = await fetch(weatherUrl);
+                const weatherData = await weatherRes.json();
 
-                // Monta a previsão dos próximos dias
-                const forecastContainer = document.getElementById('forecastContainer');
-                if (forecastContainer && data.weather) {
-                    forecastContainer.innerHTML = '';
-                    data.weather.slice(0, 5).forEach(day => {
-                        const dateFormatted = day.date.split('-').reverse().slice(0, 2).join('/');
-                        const max = day.maxtempC;
-                        const min = day.mintempC;
-                        const cond = traduzirCondicao(day.hourly[4].weatherDesc[0].value);
+                if (weatherData && weatherData.current) {
+                    document.getElementById('cityName').innerText = nomeExibicao;
+                    document.getElementById('currentTemp').innerText = `${Math.round(weatherData.current.temperature_2m)}°C`;
+                    document.getElementById('currentHumidity').innerText = `${weatherData.current.relative_humidity_2m}%`;
+                    document.getElementById('currentWind').innerText = `${Math.round(weatherData.current.wind_speed_10m)} km/h`;
+                    document.getElementById('currentCondition').innerText = getWeatherDescription(weatherData.current.weather_code);
 
-                        const card = document.createElement('div');
-                        card.className = 'forecast-card';
-                        card.innerHTML = `
-                            <h4>${dateFormatted}</h4>
-                            <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
-                            <p>Máx: <strong>${max}°C</strong></p>
-                            <p>Mín: <strong>${min}°C</strong></p>
-                        `;
-                        forecastContainer.appendChild(card);
-                    });
+                    document.getElementById('searchCityForecastName').innerText = loc.name;
+
+                    // Passo C: Monta exatamente os 5 cards na tela
+                    const forecastContainer = document.getElementById('forecastContainer');
+                    if (forecastContainer && weatherData.daily) {
+                        forecastContainer.innerHTML = '';
+
+                        for (let i = 1; i <= 5; i++) {
+                            if (!weatherData.daily.time[i]) continue;
+
+                            const dateFormatted = weatherData.daily.time[i].split('-').reverse().slice(0, 2).join('/');
+                            const max = Math.round(weatherData.daily.temperature_2m_max[i]);
+                            const min = Math.round(weatherData.daily.temperature_2m_min[i]);
+                            const probChuva = weatherData.daily.precipitation_probability_max ? weatherData.daily.precipitation_probability_max[i] : 0;
+                            const cond = getWeatherDescription(weatherData.daily.weather_code[i]);
+
+                            const card = document.createElement('div');
+                            card.className = 'forecast-card';
+                            card.innerHTML = `
+                                <h4>${dateFormatted}</h4>
+                                <p style="font-size: 0.85rem; margin-bottom: 5px;">${cond}</p>
+                                <p style="font-size: 0.8rem; color: #1e88e5; font-weight: bold;">🌧️ ${probChuva}% chuva</p>
+                                <p>Máx: <strong>${max}°C</strong></p>
+                                <p>Mín: <strong>${min}°C</strong></p>
+                            `;
+                            forecastContainer.appendChild(card);
+                        }
+                    }
                 }
 
             } catch (err) {
                 console.error("Erro ao buscar clima:", err);
-                if (errorArea) errorArea.innerText = 'Não foi possível encontrar a cidade digitada. Verifique o nome e tente novamente.';
-                document.getElementById('currentCondition').innerText = 'Erro ao carregar';
+                if (errorArea) errorArea.innerText = 'Erro ao buscar dados da cidade.';
             }
         }
 
-        function traduzirCondicao(texto) {
-            const t = texto.toLowerCase();
-            if (t.includes('clear') || t.includes('sunny')) return 'Céu Limpo / Ensolarado';
-            if (t.includes('cloudy') || t.includes('overcast')) return 'Nublado';
-            if (t.includes('rain') || t.includes('drizzle')) return 'Chuva / Chuvisco';
-            if (t.includes('thunder') || t.includes('storm')) return 'Tempestade';
-            if (t.includes('fog') || t.includes('mist')) return 'Nevoeiro';
-            if (t.includes('partly cloudy')) return 'Parcialmente Nublado';
-            return 'Ensolarado / Estável';
+        // Tabela de Códigos Meteorológicos (WMO)
+        function getWeatherDescription(code) {
+            const codes = {
+                0: '☀️ Céu Limpo',
+                1: '🌤️ Maioritariamente Limpo',
+                2: '⛅ Parcialmente Nublado',
+                3: '☁️ Nublado',
+                45: '🌫️ Nevoeiro',
+                48: '🌫️ Geada com Nevoeiro',
+                51: '🌦️ Chuvisco Leve',
+                53: '🌦️ Chuvisco Moderado',
+                55: '🌧️ Chuvisco Denso',
+                61: '🌧️ Chuva Leve',
+                63: '🌧️ Chuva Moderada',
+                65: '🌧️ Chuva Forte',
+                80: '🌦️ Pancadas de Chuva Leves',
+                81: '🌧️ Pancadas de Chuva Moderadas',
+                82: '🌩️ Pancadas de Chuva Violentas',
+                95: '⛈️ Tempestade Comum',
+                96: '⛈️ Tempestade com Granizo Leve',
+                99: '⛈️ Tempestade com Granizo Forte'
+            };
+            return codes[code] || '🌤️ Tempo Estável';
         }
 
         // INICIALIZAÇÃO DA PÁGINA
         window.onload = () => {
             buscarDadosItamaraju(); 
             getItamarajuForecast(); 
-            buscarClimaCidade(); // Carrega a cidade digitada no campo (Porto Seguro por padrão)
+            buscarClimaCidade(); 
 
             const cityInput = document.getElementById('cityInput');
             if (cityInput) {

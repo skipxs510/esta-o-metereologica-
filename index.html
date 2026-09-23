@@ -80,7 +80,7 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 1.5rem;
-            align-items: start;
+            align-items: stretch;
         }
 
         @media (max-width: 900px) {
@@ -94,33 +94,38 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            height: 100%;
         }
 
         .info-card {
             background: var(--card-bg);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-top: 3px solid var(--primary-color);
             text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .info-card h3 {
             color: var(--primary-color);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
         }
 
         .info-value {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: #333;
-            margin: 0.4rem 0;
+            margin: 0.2rem 0;
         }
 
         .astro-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
         }
 
         /* CARD DO ARDUINO / ITAMARAJU (FICA NA ESQUERDA) */
@@ -132,15 +137,18 @@
             box-shadow: 0 4px 8px rgba(157, 0, 255, 0.15);
             text-align: center;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .arduino-card h2 {
             color: var(--primary-color);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             font-size: 1.2rem;
         }
 
-        /* PESQUISA */
+        /* PESQUISA E AUTOCOMPLETE */
         .search-box-wrapper {
             position: relative;
             flex: 1;
@@ -154,6 +162,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 2rem;
+            position: relative;
         }
 
         .search-box input {
@@ -177,6 +186,33 @@
 
         .search-box button:hover {
             background-color: #1c2e66;
+        }
+
+        /* LISTA DE SUGESTÕES (AUTOCOMPLETE) */
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 1.5rem;
+            right: 130px;
+            background: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:hover {
+            background-color: #e2e8f0;
         }
 
         .weather-card {
@@ -221,6 +257,10 @@
         @media (max-width: 768px) {
             .forecast-container {
                 grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            }
+            .suggestions-list {
+                right: 1rem;
+                left: 1rem;
             }
         }
 
@@ -334,7 +374,7 @@
     </div>
 
     <main>
-        <!-- LAYOUT DUPLO: ESQUERDA (ARDUINO) + DIREITA (SOL E LUA) -->
+        <!-- LAYOUT DUPLO: ESQUERDA (ARDUINO) + DIREITA (SOL/LUA) -->
         <div class="content-layout">
             
             <!-- LADO ESQUERDO: PAINEL DO ARDUINO (ITAMARAJU) -->
@@ -379,11 +419,12 @@
 
         <hr style="margin: 2rem 0; border: none; border-top: 1px dashed #ccc;">
 
-        <!-- CAMPO DE PESQUISA PARA OUTRAS CIDADES -->
+        <!-- CAMPO DE PESQUISA COM AUTOCOMPLETE -->
         <h3 class="section-title">🔎 Consultar Outras Cidades</h3>
         <div class="search-box">
             <div class="search-box-wrapper">
-                <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Porto Seguro, Salvador)..." autocomplete="off" value="Porto Seguro">
+                <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Salvador, São Paulo)..." autocomplete="off" value="Porto Seguro">
+                <div id="suggestions" class="suggestions-list" style="display: none;"></div>
             </div>
             <button onclick="buscarClimaCidade()">Pesquisar</button>
         </div>
@@ -567,11 +608,51 @@
             document.getElementById('itamarajuMoonIcon').innerText = fases[phase].icone;
         }
 
-        async function buscarClimaCidade() {
-            const cityInput = document.getElementById('cityInput');
-            const cityName = cityInput ? cityInput.value.trim() : 'Porto Seguro';
-            const errorArea = document.getElementById('errorArea');
+        // SISTEMA DE AUTOCOMPLETAR DINÂMICO AO DIGITAR
+        async function lidarComDigitacao(e) {
+            const query = e.target.value.trim();
+            const suggestionsBox = document.getElementById('suggestions');
 
+            if (query.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=pt&format=json`);
+                const data = await res.json();
+
+                if (data.results && data.results.length > 0) {
+                    suggestionsBox.innerHTML = '';
+                    data.results.forEach(loc => {
+                        const nomeFormatado = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''} (${loc.country || ''})`;
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        item.innerText = nomeFormatado;
+                        item.onclick = () => {
+                            document.getElementById('cityInput').value = loc.name;
+                            suggestionsBox.style.display = 'none';
+                            buscarClimaCidade();
+                        };
+                        suggestionsBox.appendChild(item);
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            } catch (err) {
+                console.error("Erro no autocomplete:", err);
+                suggestionsBox.style.display = 'none';
+            }
+        }
+
+        async function buscarClimaCidade(nomeEspecifico) {
+            const cityInput = document.getElementById('cityInput');
+            const cityName = nomeEspecifico || (cityInput ? cityInput.value.trim() : 'Porto Seguro');
+            const errorArea = document.getElementById('errorArea');
+            const suggestionsBox = document.getElementById('suggestions');
+
+            if (suggestionsBox) suggestionsBox.style.display = 'none';
             if (errorArea) errorArea.innerText = '';
             document.getElementById('currentCondition').innerText = 'Carregando...';
 
@@ -694,10 +775,22 @@
 
             const cityInput = document.getElementById('cityInput');
             if (cityInput) {
+                cityInput.addEventListener('input', lidarComDigitacao);
                 cityInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') buscarClimaCidade();
+                    if (e.key === 'Enter') {
+                        document.getElementById('suggestions').style.display = 'none';
+                        buscarClimaCidade();
+                    }
                 });
             }
+
+            // Fecha a lista de sugestões ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-box-wrapper')) {
+                    const suggestionsBox = document.getElementById('suggestions');
+                    if (suggestionsBox) suggestionsBox.style.display = 'none';
+                }
+            });
 
             setInterval(buscarDadosItamaraju, 5000);
         };

@@ -72,10 +72,10 @@
         main {
             width: 100%;
             margin: 2rem auto;
-            padding: 0 2rem; /* Mais respiro nas bordas da tela em 100% de zoom */
+            padding: 0 2rem;
         }
 
-        /* LAYOUT DE 3 COLUNAS: LATERAIS FIXAS CONFORTÁVEIS E CENTRO AMPLIADO */
+        /* LAYOUT DE 3 COLUNAS */
         .content-layout {
             display: grid;
             grid-template-columns: 320px 1fr 320px;
@@ -100,7 +100,7 @@
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--primary-color);
+            border-top: 3px solid var(--primary-color); /* Borda padrão garantida em todos */
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -116,7 +116,10 @@
         .info-value {
             font-size: 0.95rem;
             color: #333;
-            margin: 0.3rem 0;
+            margin: 0.4rem 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.5rem;
         }
 
         .astro-icon {
@@ -124,7 +127,7 @@
             margin-bottom: 0.4rem;
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU (CENTRO MAIOR E COM ESPAÇO) */
+        /* CARD DO ARDUINO / ITAMARAJU */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
@@ -377,22 +380,22 @@
                 <div class="info-card">
                     <div class="astro-icon" id="itamarajuMoonIcon">🌙</div>
                     <h3>Fase da Lua</h3>
-                    <div class="info-value" id="itamarajuMoonPhase" style="font-size: 1.1rem; font-weight: bold;">Carregando...</div>
-                    <div class="info-value" id="itamarajuMoonFullDays" style="margin-top: 8px; color: #555;">--</div>
-                    <div class="info-value" id="itamarajuNextPhases" style="font-size: 0.85rem; color: #666; margin-top: 6px;">--</div>
+                    <div class="info-value" style="justify-content: center; font-size: 1.1rem; font-weight: bold;" id="itamarajuMoonPhase">Carregando...</div>
+                    <div class="info-value" style="justify-content: center; margin-top: 8px; color: #555;" id="itamarajuMoonFullDays">--</div>
+                    <div class="info-value" style="justify-content: center; font-size: 0.85rem; color: #666; margin-top: 6px;" id="itamarajuNextPhases">--</div>
                 </div>
 
-                <!-- 7. CARD DE MARÉS / INFORMAÇÕES MARÍTIMAS -->
+                <!-- 7. CARD DE MARÉS -->
                 <div class="info-card" style="border-top-color: #0284c7;">
                     <div class="astro-icon">🌊</div>
-                    <h3>Informações Marítimas & Marés</h3>
-                    <div class="info-value">Preamar (Maré Alta): <strong id="tideHigh">04:15 / 16:40</strong></div>
-                    <div class="info-value">Baixa-mar (Maré Baixa): <strong id="tideLow">10:25 / 22:50</strong></div>
-                    <div class="info-value" style="font-size: 0.85rem; color: #555; margin-top: 8px;">Coeficiente / Estado: <strong>Normal / Estável</strong></div>
+                    <h3>Informações Marítimas</h3>
+                    <div class="info-value"><span>Preamar (Alta):</span> <strong id="tideHigh">04:15 / 16:40</strong></div>
+                    <div class="info-value"><span>Baixa-mar:</span> <strong id="tideLow">10:25 / 22:50</strong></div>
+                    <div class="info-value" style="font-size: 0.85rem; color: #555; margin-top: 8px; justify-content: center;">Estado: <strong>Normal / Estável</strong></div>
                 </div>
             </div>
 
-            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU (DESTAQUE MAIOR) -->
+            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU -->
             <div>
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
@@ -413,20 +416,20 @@
 
             <!-- COLUNA DIREITA: INFORMAÇÕES DO DIA E NOITE -->
             <div class="column-side">
-                <!-- 4. INFORMAÇÕES DO DIA E NOITE -->
+                <!-- 4. INFORMAÇÕES DO DIA E NOITE (COM BORDAS E ESPAÇAMENTOS CORRIGIDOS) -->
                 <div class="info-card">
                     <div class="astro-icon">☀️ 🌙</div>
                     <h3>Informações do Dia e Noite</h3>
-                    <div style="text-align: left; margin-top: 8px; font-size: 0.9rem;">
+                    <div style="text-align: left; margin-top: 4px; font-size: 0.9rem;">
                         <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 6px;">☀️ Sol</p>
-                        <div class="info-value">Nascer: <span id="itamarajuSunrise">--:--</span></div>
-                        <div class="info-value">Zênite (Topo): <span id="itamarajuSunZenith">--:--</span></div>
-                        <div class="info-value">Pôr do Sol: <span id="itamarajuSunset">--:--</span></div>
+                        <div class="info-value"><span>Nascer:</span> <strong id="itamarajuSunrise">--:--</strong></div>
+                        <div class="info-value"><span>Zênite:</span> <strong id="itamarajuSunZenith">--:--</strong></div>
+                        <div class="info-value"><span>Pôr do Sol:</span> <strong id="itamarajuSunset">--:--</strong></div>
                         
                         <p style="font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 4px; margin-top: 12px; margin-bottom: 6px;">🌙 Lua</p>
-                        <div class="info-value">Nascer da Lua: <span id="moonriseTime">--:--</span></div>
-                        <div class="info-value">Culminação (Topo): <span id="moonZenithTime">--:--</span></div>
-                        <div class="info-value">Ocaso da Lua: <span id="moonsetTime">--:--</span></div>
+                        <div class="info-value"><span>Nascer da Lua:</span> <strong id="moonriseTime">--:--</strong></div>
+                        <div class="info-value"><span>Culminação:</span> <strong id="moonZenithTime">--:--</strong></div>
+                        <div class="info-value"><span>Ocaso da Lua:</span> <strong id="moonsetTime">--:--</strong></div>
                     </div>
                 </div>
             </div>
@@ -491,7 +494,6 @@
         const ITAMARAJU_LAT = -17.0397;
         const ITAMARAJU_LON = -39.5311;
 
-        // SUPABASE
         const SUPABASE_URL = 'https://klnuljixtmixfrzgpzmv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_06gMLuRxhQh4Z_z6jb1Bdg_dWXSx3Du';
         let supabaseClient = null;
@@ -641,16 +643,16 @@
             if (diasParaCheia === 0) {
                 textoCheia = "🌕 É Lua Cheia hoje!";
             } else if (diasParaCheia > 0) {
-                textoCheia = `Faltam <strong>${diasParaCheia} dias</strong> para a Lua Cheia`;
+                textoCheia = `Faltam ${diasParaCheia} dias para a Lua Cheia`;
             } else {
                 let diasProximaCheia = Math.round(29.53 - phaseVal);
-                textoCheia = `Faltam <strong>${diasProximaCheia} dias</strong> para a próxima Lua Cheia`;
+                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Lua Cheia`;
             }
 
             document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;
             document.getElementById('itamarajuMoonIcon').innerText = fases[phaseIndex].icone;
-            document.getElementById('itamarajuMoonFullDays').innerHTML = textoCheia;
-            document.getElementById('itamarajuNextPhases').innerHTML = `Próxima fase: <strong>${fases[phaseIndex].proxima}</strong>`;
+            document.getElementById('itamarajuMoonFullDays').innerText = textoCheia;
+            document.getElementById('itamarajuNextPhases').innerText = `Próxima fase: ${fases[phaseIndex].proxima}`;
 
             let moonriseH = (6 + Math.round(phaseVal * 0.8)) % 24;
             let moonzenH = (moonriseH + 6) % 24;

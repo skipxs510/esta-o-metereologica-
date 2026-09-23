@@ -68,16 +68,16 @@
         }
 
         main {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            max-width: 98%;
+            margin: 1.5rem auto;
+            padding: 0 0.5rem;
         }
 
-        /* LAYOUT DE 3 COLUNAS: ESQUERDA (LUA + MARÉS), CENTRO (ARDUINO), DIREITA (DIA E NOITE) */
+        /* LAYOUT DE 3 COLUNAS: LARGURA TOTAL COM CENTRO MAIOR */
         .content-layout {
             display: grid;
-            grid-template-columns: 1fr 1.4fr 1fr;
-            gap: 1.5rem;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 1rem;
             align-items: stretch;
         }
 
@@ -90,12 +90,12 @@
         .column-side {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         .info-card {
             background: var(--card-bg);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-top: 3px solid var(--primary-color);
@@ -107,22 +107,22 @@
 
         .info-card h3 {
             color: var(--primary-color);
-            font-size: 1.1rem;
-            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+            margin-bottom: 0.6rem;
         }
 
         .info-value {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: #333;
-            margin: 0.25rem 0;
+            margin: 0.2rem 0;
         }
 
         .astro-icon {
-            font-size: 2.2rem;
-            margin-bottom: 0.3rem;
+            font-size: 2rem;
+            margin-bottom: 0.2rem;
         }
 
-        /* CARD DO ARDUINO / ITAMARAJU (CENTRO) */
+        /* CARD DO ARDUINO / ITAMARAJU (CENTRO MAIOR) */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
@@ -139,7 +139,7 @@
         .arduino-card h2 {
             color: var(--primary-color);
             margin-bottom: 0.3rem;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         /* PESQUISA E AUTOCOMPLETE */
@@ -355,7 +355,7 @@
 </head>
 <body>
 
-    <!-- CABEÇALHO COM LOGO E TÍTULO JUNTOS À ESQUERDA NO FUNDO AZUL -->
+    <!-- CABEÇALHO -->
     <header>
         <div style="display: flex; align-items: center; gap: 15px;">
             <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
@@ -368,7 +368,7 @@
     </div>
 
     <main>
-        <!-- LAYOUT DE 3 COLUNAS -->
+        <!-- LAYOUT DE 3 COLUNAS (LARGURA AMPLIADA E CENTRO DESTAQUE) -->
         <div class="content-layout">
             
             <!-- COLUNA ESQUERDA: FASE DA LUA + MARÉS -->
@@ -392,7 +392,7 @@
                 </div>
             </div>
 
-            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU -->
+            <!-- COLUNA CENTRAL: ESTAÇÃO METEOROLÓGICA ITAMARAJU (MAIOR) -->
             <div>
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>

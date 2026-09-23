@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Site meteorológico Escola Crescer</title>
 
-    <!-- Ícone da Aba do Navegador (Favicon) -->
+    <!-- Ícone da Aba do Navegador -->
     <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- Importação do Supabase -->
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --primary-color: #27408B; /* RoyalBlue4 */
-            --secondary-color: #000000; /* Preto */
+            --primary-color: #27408B;
+            --secondary-color: #000000;
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #333333;
-            --arduino-card-bg: #f3e8ff; /* Roxo claro para o destaque local */
+            --arduino-card-bg: #f3e8ff;
         }
 
         * {
@@ -59,7 +59,6 @@
             padding: 2px;
         }
 
-        /* BANNER DE ALERTA - AMARELO CLARO */
         .alert-banner {
             background-color: #fff3cd;
             color: #856404;
@@ -76,7 +75,7 @@
             padding: 0 1rem;
         }
 
-        /* CARD FIXO DE ITAMARAJU / ARDUINO */
+        /* CARD DO ARDUINO / ITAMARAJU */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
@@ -92,7 +91,7 @@
             margin-bottom: 0.5rem;
         }
 
-        /* CAMPO DE PESQUISA COM SUGESTÕES (AUTOCOMPLETE) */
+        /* AUTOCOMPLETE / SUGESTÕES DE CIDADES */
         .search-box-wrapper {
             position: relative;
             flex: 1;
@@ -131,7 +130,6 @@
             background-color: #1c2e66;
         }
 
-        /* LISTA DE SUGESTÕES DE CIDADES */
         .suggestions-list {
             position: absolute;
             top: 100%;
@@ -239,10 +237,10 @@
     </div>
 
     <main>
-        <!-- 1. CIDADE FIXA: ITAMARAJU / ARDUINO (EXCLUSIVO SUPABASE) -->
+        <!-- 1. PAINEL EXCLUSIVO DO ARDUINO (ITAMARAJU) -->
         <section class="arduino-card">
             <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-            <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição Arduino / Supabase)</p>
+            <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição Exclusiva via Arduino)</p>
             
             <div class="temp" id="arduinoTemp">--°C</div>
             
@@ -251,10 +249,12 @@
                 <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
             </div>
 
-            <p id="arduinoStatus" style="font-size: 0.8rem; color: #777; margin-top: 15px;">Aguardando dados do Arduino...</p>
+            <p id="arduinoStatus" style="font-size: 0.85rem; color: #d32f2f; margin-top: 15px; font-weight: bold;">
+                ⚠️ Arduino desconectado. Aguardando envio de dados...
+            </p>
         </section>
 
-        <!-- 2. CAMPO DE PESQUISA PARA OUTRAS CIDADES (COM SUGESTÕES) -->
+        <!-- 2. CAMPO DE PESQUISA PARA OUTRAS CIDADES -->
         <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Consultar Outras Cidades</h3>
         <div class="search-box">
             <div class="search-box-wrapper">
@@ -268,9 +268,9 @@
 
         <!-- RESULTADO DA CIDADE PESQUISADA -->
         <div class="weather-card" id="currentWeather">
-            <h2 id="cityName">Carregando...</h2>
+            <h2 id="cityName">Salvador - Bahia (Brasil)</h2>
             <div class="temp" id="currentTemp">--°C</div>
-            <p id="currentCondition">Condição climática</p>
+            <p id="currentCondition">Carregando...</p>
             <div class="details">
                 <div>Umidade: <strong id="currentHumidity">--%</strong></div>
                 <div>Vento: <strong id="currentWind">-- km/h</strong></div>
@@ -279,7 +279,7 @@
 
         <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Previsão para os Próximos Dias</h3>
         <div class="forecast-container" id="forecastContainer">
-            <!-- Previsão dos próximos dias criada dinamicamente -->
+            <!-- Previsão criada via JavaScript -->
         </div>
     </main>
 
@@ -289,21 +289,37 @@
 
     <script>
         // ==========================================
-        // CONFIGURAÇÃO SUPABASE (ARDUINO ITAMARAJU)
+        // SUPABASE: CONSULTA 100% EXCLUSIVA DO ARDUINO
         // ==========================================
         const SUPABASE_URL = 'https://klnuljixtmixfrzgpzmv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_06gMLuRxhQh4Z_z6jb1Bdg_dWXSx3Du';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let supabaseClient = null;
 
-        // Busca APENAS dados gravados pelo Arduino na tabela 'Leituras'
-        async function buscarDadosItamaraju() {
+        if (window.supabase) {
             try {
-                const { data, error } = await _supabase
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } catch (err) {
+                console.error("Erro no Supabase:", err);
+            }
+        }
+
+        async function buscarDadosItamaraju() {
+            const statusElem = document.getElementById('arduinoStatus');
+            
+            if (!supabaseClient) {
+                statusElem.innerText = '⚠️ Supabase não inicializado.';
+                return;
+            }
+
+            try {
+                // Consulta somente a tabela 'Leituras' enviada pelo Arduino
+                const { data, error } = await supabaseClient
                     .from('Leituras')
                     .select('*')
                     .order('id', { ascending: false })
                     .limit(1);
 
+                // Se houver dados gravados pelo Arduino na tabela
                 if (!error && data && data.length > 0) {
                     const leitura = data[0];
 
@@ -311,98 +327,101 @@
                     document.getElementById('arduinoHumidity').innerText = (leitura.umidade !== undefined && leitura.umidade !== null) ? `${leitura.umidade}%` : '--%';
                     document.getElementById('arduinoWind').innerText = (leitura.vento !== undefined && leitura.vento !== null) ? `${leitura.vento} km/h` : '-- km/h';
                     
-                    const horaAtual = new Date().toLocaleTimeString('pt-BR');
-                    document.getElementById('arduinoStatus').innerText = `Última atualização do Arduino: ${horaAtual}`;
+                    statusElem.style.color = '#2e7d32'; // Verde
+                    statusElem.innerText = `🟢 Conectado - Última leitura: ${new Date().toLocaleTimeString('pt-BR')}`;
                 } else {
-                    document.getElementById('arduinoStatus').innerText = 'Aguardando envio de dados do Arduino...';
+                    // Sem dados no Supabase / Arduino desligado
+                    resetarPainelArduino('⚠️ Arduino desconectado. Aguardando dados...');
                 }
             } catch (err) {
-                console.error('Erro ao conectar ao Supabase:', err);
-                document.getElementById('arduinoStatus').innerText = 'Erro ao carregar dados do Arduino.';
+                resetarPainelArduino('⚠️ Erro de conexão com o banco de dados do Arduino.');
             }
         }
 
-        // ==========================================
-        // BUSCA E SUGESTÃO DE CIDADES (OPEN-METEO)
-        // ==========================================
-        let selectedLat = null;
-        let selectedLon = null;
+        function resetarPainelArduino(mensagem) {
+            document.getElementById('arduinoTemp').innerText = '--°C';
+            document.getElementById('arduinoHumidity').innerText = '--%';
+            document.getElementById('arduinoWind').innerText = '-- km/h';
+            const statusElem = document.getElementById('arduinoStatus');
+            statusElem.style.color = '#d32f2f'; // Vermelho
+            statusElem.innerText = mensagem;
+        }
 
-        // Função para buscar lista de sugestões enquanto digita
-        async function fetchCitySuggestions(query) {
+        // ==========================================
+        // AUTOCOMPLETE E CONSULTA DE OUTRAS CIDADES
+        // ==========================================
+        let timeoutId = null;
+
+        function handleInput(query) {
+            clearTimeout(timeoutId);
             const suggestionsBox = document.getElementById('suggestions');
+
             if (!query || query.length < 1) {
                 suggestionsBox.style.display = 'none';
                 return;
             }
 
-            try {
-                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=pt&format=json`);
-                const data = await response.json();
+            timeoutId = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=pt&format=json`);
+                    const data = await res.json();
 
-                if (data.results && data.results.length > 0) {
-                    suggestionsBox.innerHTML = '';
-                    data.results.forEach(city => {
-                        const item = document.createElement('div');
-                        item.className = 'suggestion-item';
-                        const nameFormatted = `${city.name}${city.admin1 ? ', ' + city.admin1 : ''} (${city.country || ''})`;
-                        item.innerText = nameFormatted;
-                        
-                        item.onclick = () => {
-                            document.getElementById('cityInput').value = city.name;
-                            selectedLat = city.latitude;
-                            selectedLon = city.longitude;
-                            suggestionsBox.style.display = 'none';
-                            getWeatherData(city.name, city.latitude, city.longitude, nameFormatted);
-                        };
-                        
-                        suggestionsBox.appendChild(item);
-                    });
-                    suggestionsBox.style.display = 'block';
-                } else {
-                    suggestionsBox.style.display = 'none';
+                    if (data.results && data.results.length > 0) {
+                        suggestionsBox.innerHTML = '';
+                        data.results.forEach(city => {
+                            const item = document.createElement('div');
+                            item.className = 'suggestion-item';
+                            const title = `${city.name}${city.admin1 ? ', ' + city.admin1 : ''} (${city.country || ''})`;
+                            item.innerText = title;
+
+                            item.onclick = () => {
+                                document.getElementById('cityInput').value = city.name;
+                                suggestionsBox.style.display = 'none';
+                                getWeatherData(city.latitude, city.longitude, title);
+                            };
+
+                            suggestionsBox.appendChild(item);
+                        });
+                        suggestionsBox.style.display = 'block';
+                    } else {
+                        suggestionsBox.style.display = 'none';
+                    }
+                } catch (e) {
+                    console.error("Erro na busca de sugestões:", e);
                 }
-            } catch (err) {
-                console.error('Erro ao buscar sugestões:', err);
-            }
+            }, 250);
         }
 
-        // Função para buscar clima da cidade
-        async function getWeatherData(cityNameParam, latParam, lonParam, fullNameParam) {
-            const cityName = cityNameParam || document.getElementById('cityInput').value.trim();
+        async function getWeatherData(latParam, lonParam, titleParam) {
+            const cityName = document.getElementById('cityInput').value.trim();
             const errorArea = document.getElementById('errorArea');
             document.getElementById('suggestions').style.display = 'none';
             errorArea.innerText = '';
 
-            if (!cityName) {
-                errorArea.innerText = 'Por favor, digite o nome de uma cidade.';
-                return;
-            }
+            if (!cityName) return;
 
             try {
                 let latitude = latParam;
                 let longitude = lonParam;
-                let displayName = fullNameParam;
+                let displayName = titleParam;
 
-                // Se não tiver coordenadas (pesquisa direta pelo botão), realiza a busca
                 if (!latitude || !longitude) {
-                    const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
-                    const geoData = await geoResponse.json();
+                    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
+                    const geoData = await geoRes.json();
 
                     if (!geoData.results || geoData.results.length === 0) {
-                        errorArea.innerText = 'Cidade não encontrada. Tente novamente.';
+                        errorArea.innerText = 'Cidade não encontrada.';
                         return;
                     }
 
-                    const location = geoData.results[0];
-                    latitude = location.latitude;
-                    longitude = location.longitude;
-                    displayName = `${location.name}${location.admin1 ? ' - ' + location.admin1 : ''} (${location.country || ''})`;
+                    const loc = geoData.results[0];
+                    latitude = loc.latitude;
+                    longitude = loc.longitude;
+                    displayName = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''} (${loc.country || ''})`;
                 }
 
-                // Busca dados meteorológicos
-                const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,time&timezone=auto`);
-                const weatherData = await weatherResponse.json();
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,time&timezone=auto`);
+                const weatherData = await weatherRes.json();
 
                 document.getElementById('cityName').innerText = displayName;
                 document.getElementById('currentTemp').innerText = `${weatherData.current.temperature_2m}°C`;
@@ -410,81 +429,61 @@
                 document.getElementById('currentWind').innerText = `${weatherData.current.wind_speed_10m} km/h`;
                 document.getElementById('currentCondition').innerText = getWeatherDescription(weatherData.current.weather_code);
 
-                // Previsão para os próximos 5 dias
                 const forecastContainer = document.getElementById('forecastContainer');
                 forecastContainer.innerHTML = '';
 
                 for (let i = 1; i <= 5; i++) {
                     const dateStr = weatherData.daily.time[i];
-                    const maxTemp = weatherData.daily.temperature_2m_max[i];
-                    const minTemp = weatherData.daily.temperature_2m_min[i];
+                    const max = weatherData.daily.temperature_2m_max[i];
+                    const min = weatherData.daily.temperature_2m_min[i];
                     const code = weatherData.daily.weather_code[i];
-                    const formattedDate = dateStr.split('-').reverse().slice(0, 2).join('/');
+                    const dateFormatted = dateStr.split('-').reverse().slice(0, 2).join('/');
 
                     const card = document.createElement('div');
                     card.className = 'forecast-card';
                     card.innerHTML = `
-                        <h4>${formattedDate}</h4>
+                        <h4>${dateFormatted}</h4>
                         <p style="font-size: 0.9rem; margin-bottom: 5px;">${getWeatherDescription(code)}</p>
-                        <p>Máx: <strong>${maxTemp}°C</strong></p>
-                        <p>Mín: <strong>${minTemp}°C</strong></p>
+                        <p>Máx: <strong>${max}°C</strong></p>
+                        <p>Mín: <strong>${min}°C</strong></p>
                     `;
                     forecastContainer.appendChild(card);
                 }
 
-                // Limpa seleções temporárias
-                selectedLat = null;
-                selectedLon = null;
-
-            } catch (error) {
-                console.error(error);
-                errorArea.innerText = 'Erro ao buscar dados meteorológicos. Verifique sua conexão.';
+            } catch (err) {
+                console.error(err);
+                errorArea.innerText = 'Não foi possível carregar os dados no momento.';
             }
         }
 
         function getWeatherDescription(code) {
-            const weatherCodes = {
-                0: 'Céu limpo',
-                1: 'Principalmente limpo',
-                2: 'Parcialmente nublado',
-                3: 'Nublado',
-                45: 'Nevoeiro',
-                51: 'Chuvisco leve',
-                61: 'Chuva leve',
-                63: 'Chuva moderada',
-                80: 'Pancadas de chuva',
-                95: 'Tempestade'
+            const codes = {
+                0: 'Céu limpo', 1: 'Principalmente limpo', 2: 'Parcialmente nublado',
+                3: 'Nublado', 45: 'Nevoeiro', 51: 'Chuvisco leve', 61: 'Chuva leve',
+                63: 'Chuva moderada', 80: 'Pancadas de chuva', 95: 'Tempestade'
             };
-            return weatherCodes[code] || 'Condição estável';
+            return codes[code] || 'Condição estável';
         }
 
-        // Executado ao carregar a página
+        // INICIALIZAÇÃO DA PÁGINA
         window.onload = () => {
-            buscarDadosItamaraju(); // Carrega apenas dados reais do Arduino no Supabase
-            getWeatherData();        // Carrega a cidade inicial da busca (Salvador)
+            buscarDadosItamaraju(); // Busca SOMENTE no Supabase (sem API pública para Itamaraju)
+            getWeatherData();        // Cidade pesquisada inicial (Salvador)
 
             const cityInput = document.getElementById('cityInput');
 
-            // Evento para buscar sugestões enquanto o usuário digita
-            cityInput.addEventListener('input', (e) => {
-                fetchCitySuggestions(e.target.value.trim());
-            });
-
-            // Permite pesquisar ao pressionar Enter
+            cityInput.addEventListener('input', (e) => handleInput(e.target.value.trim()));
             cityInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    getWeatherData();
-                }
+                if (e.key === 'Enter') getWeatherData();
             });
 
-            // Esconde sugestões ao clicar fora do campo
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.search-box-wrapper')) {
                     document.getElementById('suggestions').style.display = 'none';
                 }
             });
 
-            // Atualiza o painel do Arduino a cada 5 segundos
+            // Tenta buscar atualizações do Arduino no Supabase a cada 5 segundos
             setInterval(buscarDadosItamaraju, 5000);
         };
     </script>

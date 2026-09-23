@@ -70,9 +70,22 @@
         }
 
         main {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 2rem auto;
             padding: 0 1rem;
+        }
+
+        /* LAYOUT PRINCIPAL COM SIDEBAR À DIREITA */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* CARD DO ARDUINO / ITAMARAJU */
@@ -161,6 +174,40 @@
             color: #555;
         }
 
+        /* PAINEL LATERAL (LADO DIREITO: SOL E LUA) */
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 3px solid var(--primary-color);
+            text-align: center;
+        }
+
+        .info-card h3 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0.4rem 0;
+        }
+
+        .astro-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
         /* GRID PARA OS 5 DIAS */
         .forecast-container {
             display: grid;
@@ -187,6 +234,68 @@
         .forecast-card h4 {
             margin-bottom: 0.5rem;
             color: var(--primary-color);
+        }
+
+        /* SEÇÃO DE NOTÍCIAS (EMBAIXO) */
+        .news-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-top: 3rem;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .news-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-item {
+            background: #fdfdfd;
+            border: 1px solid #e2e8f0;
+            padding: 1.2rem;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+
+        .news-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .news-item h4 {
+            font-size: 1rem;
+            color: #222;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-item p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .news-item a {
+            color: var(--primary-color);
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.85rem;
+            align-self: flex-start;
+        }
+
+        .news-item a:hover {
+            text-decoration: underline;
         }
 
         footer {
@@ -223,22 +332,43 @@
     </div>
 
     <main>
-        <!-- 1. PAINEL EXCLUSIVO DO ARDUINO (ITAMARAJU) -->
-        <section class="arduino-card">
-            <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-            <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
-            
-            <div class="temp" id="arduinoTemp">--°C</div>
-            
-            <div class="details">
-                <div>Umidade: <strong id="arduinoHumidity">--%</strong></div>
-                <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
+        <!-- LAYOUT DUPLO: CONTEÚDO PRINCIPAL + LATERAL (SOL E LUA) -->
+        <div class="content-layout">
+            <div>
+                <!-- 1. PAINEL EXCLUSIVO DO ARDUINO (ITAMARAJU) -->
+                <section class="arduino-card">
+                    <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
+                    <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
+                    
+                    <div class="temp" id="arduinoTemp">--°C</div>
+                    
+                    <div class="details">
+                        <div>Umidade: <strong id="arduinoHumidity">--%</strong></div>
+                        <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
+                    </div>
+
+                    <p id="arduinoStatus" style="font-size: 0.85rem; color: #d32f2f; margin-top: 15px; font-weight: bold;">
+                        ⚠️ Arduino desconectado. Aguardando envio de dados...
+                    </p>
+                </section>
             </div>
 
-            <p id="arduinoStatus" style="font-size: 0.85rem; color: #d32f2f; margin-top: 15px; font-weight: bold;">
-                ⚠️ Arduino desconectado. Aguardando envio de dados...
-            </p>
-        </section>
+            <!-- LADO DIREITO: FASE DA LUA E INFORMAÇÕES SOLARES -->
+            <div class="sidebar-panel">
+                <div class="info-card">
+                    <div class="astro-icon" id="moonIcon">🌙</div>
+                    <h3>Fase da Lua</h3>
+                    <div class="info-value" id="moonPhaseName">Carregando...</div>
+                </div>
+
+                <div class="info-card">
+                    <div class="astro-icon">☀️</div>
+                    <h3>Sol & Claridade</h3>
+                    <div class="info-value" style="font-size: 0.95rem;">Nascer: <span id="sunRise">--:--</span></div>
+                    <div class="info-value" style="font-size: 0.95rem;">Pôr do Sol: <span id="sunSet">--:--</span></div>
+                </div>
+            </div>
+        </div>
 
         <!-- PREVISÃO 5 DIAS - ITAMARAJU -->
         <h3 class="section-title">📅 Previsão para os Próximos 5 Dias em Itamaraju/BA</h3>
@@ -275,6 +405,19 @@
         <div class="forecast-container" id="forecastContainer">
             <!-- Previsão da cidade pesquisada criada via JS -->
         </div>
+
+        <!-- 3. SEÇÃO DE NOTÍCIAS DO BRASIL E DO MUNDO -->
+        <section class="news-section">
+            <h2>📰 Últimas Notícias do Brasil e do Mundo</h2>
+            <div class="news-grid" id="newsContainer">
+                <div class="news-item">
+                    <div>
+                        <h4>Carregando notícias em tempo real...</h4>
+                        <p>Aguarde um instante enquanto buscamos as principais atualizações globais e nacionais.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -342,18 +485,14 @@
         }
 
         // ==========================================
-        // OPEN-METEO API (ALTA PRECISÃO - ECMWF MODEL)
+        // OPEN-METEO API (CLIMA, SOL E LUA)
         // ==========================================
 
-        // Função auxiliar para renderizar os cards de previsão com segurança exata de 5 dias
         function renderizarPrevisao(dailyData, containerId) {
             const container = document.getElementById(containerId);
             if (!container || !dailyData || !dailyData.time) return;
 
             container.innerHTML = '';
-
-            // Descobre qual índice corresponde a "amanhã" ou a partir de hoje de forma precisa
-            // Pegamos sempre do índice 1 ao 5 para garantir os próximos 5 dias futuros
             let count = 0;
             for (let i = 1; i < dailyData.time.length && count < 5; i++) {
                 const dateFormatted = dailyData.time[i].split('-').reverse().slice(0, 2).join('/');
@@ -376,23 +515,70 @@
             }
         }
         
-        // 1. Previsão de Itamaraju (Com modelo ECMWF de alta precisão)
-        async function getItamarajuForecast() {
+        // Carrega dados astronômicos de Itamaraju na barra lateral direita
+        async function getItamarajuAstroAndForecast() {
             try {
-                // Adicionado '&models=best_match' e fuso horário rigoroso para precisão máxima
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${ITAMARAJU_LAT}&longitude=${ITAMARAJU_LON}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FSao_Paulo&forecast_days=6`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${ITAMARAJU_LAT}&longitude=${ITAMARAJU_LON}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,moonrise,moonset&timezone=America%2FSao_Paulo&forecast_days=6`;
                 const res = await fetch(url);
                 const data = await res.json();
                 
                 if (data.daily) {
                     renderizarPrevisao(data.daily, 'itamarajuForecastContainer');
+
+                    // Atualiza Sol e Lua de hoje (índice 0)
+                    if (data.daily.sunrise && data.daily.sunset) {
+                        const sunriseTime = data.daily.sunrise[0].split('T')[1];
+                        const sunsetTime = data.daily.sunset[0].split('T')[1];
+                        document.getElementById('sunRise').innerText = sunriseTime;
+                        document.getElementById('sunSet').innerText = sunsetTime;
+                    }
+
+                    // Estimativa / Cálculo simples da Fase da Lua com base na data atual
+                    atualizarFaseLua();
                 }
             } catch (err) {
                 console.error("Erro na previsão de Itamaraju:", err);
             }
         }
 
-        // 2. Busca e Previsão para Cidade Pesquisada
+        // Função para calcular a fase da lua atual por aproximação matemática segura
+        function atualizarFaseLua() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            // Algoritmo simples de cálculo sinódico da lua
+            let c = 0, e = 0, jd = 0, b = 0;
+            if (month < 3) {
+                year--;
+                month += 12;
+            }
+            ++month;
+            c = 365.25 * year;
+            e = 30.6 * month;
+            jd = c + e + day - 694039.09; // JD é o dia juliano aproximado
+            jd /= 29.53058867; // Ciclo sinódico da lua em dias
+            let b_val = parseInt(jd);
+            jd -= b_val; // parte fracionária, que dá a fase (0 a 1)
+            let phase = parseInt(jd * 8 + 0.5);
+            phase = phase & 7;
+
+            const fases = [
+                { nome: "Nova", icone: "🌑" },
+                { nome: "Crescente Côncava", icone: "🌒" },
+                { nome: "Quarto Crescente", icone: "🌓" },
+                { nome: "Crescente Gibosa", icone: "🌔" },
+                { nome: "Cheia", icone: "🌕" },
+                { nome: "Minguante Gibosa", icone: "🌖" },
+                { nome: "Quarto Minguante", icone: "🌗" },
+                { nome: "Minguante Côncava", icone: "🌘" }
+            ];
+
+            document.getElementById('moonPhaseName').innerText = fases[phase].nome;
+            document.getElementById('moonIcon').innerText = fases[phase].icone;
+        }
+
         async function buscarClimaCidade() {
             const cityInput = document.getElementById('cityInput');
             const cityName = cityInput ? cityInput.value.trim() : 'Porto Seguro';
@@ -402,7 +588,6 @@
             document.getElementById('currentCondition').innerText = 'Carregando...';
 
             try {
-                // Coordenadas da Cidade
                 const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
                 const geoData = await geoRes.json();
 
@@ -417,7 +602,6 @@
                 const lon = loc.longitude;
                 const nomeExibicao = `${loc.name}${loc.admin1 ? ' - ' + loc.admin1 : ''} (${loc.country || ''})`;
 
-                // Clima Atual e Previsão com fuso horário ajustado para o Brasil
                 const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FSao_Paulo&forecast_days=6`;
                 const weatherRes = await fetch(weatherUrl);
                 const weatherData = await weatherRes.json();
@@ -431,7 +615,6 @@
 
                     document.getElementById('searchCityForecastName').innerText = loc.name;
 
-                    // Renderiza os 5 dias seguintes com segurança
                     if (weatherData.daily) {
                         renderizarPrevisao(weatherData.daily, 'forecastContainer');
                     }
@@ -443,7 +626,53 @@
             }
         }
 
-        // Tabela de Códigos Meteorológicos (WMO) Aprimorada
+        // ==========================================
+        // BUSCAR NOTÍCIAS DO BRASIL E DO MUNDO
+        // ==========================================
+        async function carregarNoticias() {
+            const newsContainer = document.getElementById('newsContainer');
+            try {
+                // Utilizando uma API pública gratuita do HackerNews traduzida ou de notícias abertas via RSS-to-JSON
+                const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419'));
+                const data = await res.json();
+                
+                if (data && data.contents) {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
+                    const items = xmlDoc.querySelectorAll('item');
+
+                    newsContainer.innerHTML = '';
+                    let count = 0;
+
+                    // Exibe 4 notícias recentes
+                    for (let i = 0; i < items.length && count < 4; i++) {
+                        const title = items[i].querySelector('title')?.textContent || 'Sem título';
+                        const link = items[i].querySelector('link')?.textContent || '#';
+                        const pubDate = items[i].querySelector('pubDate')?.textContent || '';
+                        
+                        // Data limpa
+                        const dateObj = new Date(pubDate);
+                        const timeFormatted = !isNaN(dateObj) ? dateObj.toLocaleDateString('pt-BR') + ' às ' + dateObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}) : '';
+
+                        const newsCard = document.createElement('div');
+                        newsCard.className = 'news-item';
+                        newsCard.innerHTML = `
+                            <div>
+                                <h4>${title}</h4>
+                                <p>🕒 ${timeFormatted}</p>
+                            </div>
+                            <a href="${link}" target="_blank">Ler notícia completa &rarr;</a>
+                        `;
+                        newsContainer.appendChild(newsCard);
+                        count++;
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao carregar notícias:", err);
+                newsContainer.innerHTML = `<p style="color: #666; grid-column: span 2; text-align: center;">Não foi possível carregar o feed de notícias no momento.</p>`;
+            }
+        }
+
         function getWeatherDescription(code) {
             const codes = {
                 0: '☀️ Céu Limpo',
@@ -471,8 +700,9 @@
         // INICIALIZAÇÃO DA PÁGINA
         window.onload = () => {
             buscarDadosItamaraju(); 
-            getItamarajuForecast(); 
+            getItamarajuAstroAndForecast(); 
             buscarClimaCidade(); 
+            carregarNoticias();
 
             const cityInput = document.getElementById('cityInput');
             if (cityInput) {

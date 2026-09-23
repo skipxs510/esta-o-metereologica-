@@ -34,14 +34,16 @@
             line-height: 1.6;
         }
 
+        /* CABEÇALHO COM LOGO À DIREITA MAIOR E DENTRO DA FAIXA AZUL */
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 0.8rem 2rem;
+            padding: 0.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 4px solid var(--secondary-color);
+            overflow: hidden; /* Garante que nada passe da faixa azul */
         }
 
         header h1 {
@@ -49,8 +51,8 @@
         }
 
         .header-logo {
-            height: 60px;
-            width: 60px;
+            height: 75px; /* Aumentada conforme pedido */
+            width: 75px;
             border-radius: 50%;
             background-color: white;
             padding: 2px;
@@ -355,12 +357,10 @@
 </head>
 <body>
 
-    <!-- CABEÇALHO -->
+    <!-- CABEÇALHO COM LOGO À DIREITA -->
     <header>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
-            <h1>Site meteorológico Escola Crescer</h1>
-        </div>
+        <h1>Site meteorológico Escola Crescer</h1>
+        <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
     </header>
 
     <div class="alert-banner">

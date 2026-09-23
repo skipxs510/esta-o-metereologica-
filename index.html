@@ -132,9 +132,9 @@
 
         /* CARD DO ARDUINO / ITAMARAJU COM FUNDO BRANCO E BORDAS EM DESTAQUE */
         .arduino-card {
-            background: var(--card-bg); /* Fundo branco limpo */
+            background: var(--card-bg);
             border: 1px solid #e2e8f0;
-            border-top: 4px solid var(--primary-color); /* Borda superior em azul marcante */
+            border-top: 4px solid var(--primary-color);
             padding: 1.5rem;
             border-radius: 6px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
@@ -155,7 +155,7 @@
             font-size: 3rem;
             font-weight: 700;
             color: #1e293b;
-            margin: 0.3rem 0;
+            margin: 0.2rem 0;
         }
 
         /* PESQUISA COMPACTA */
@@ -403,8 +403,8 @@
                 <div class="info-card" style="border-top-color: #0284c7;">
                     <div class="astro-icon">🌊</div>
                     <h3>Informações Marítimas</h3>
-                    <div class="info-value"><span>Preamar (maré Alta):</span> <strong id="tideHigh">04:15 / 16:40</strong></div>
-                    <div class="info-value"><span>Baixa-mar (maré Baixa):</span> <strong id="tideLow">10:25 / 22:50</strong></div>
+                    <div class="info-value"><span>Preamar (Alta):</span> <strong id="tideHigh">04:15 / 16:40</strong></div>
+                    <div class="info-value"><span>Baixa-mar:</span> <strong id="tideLow">10:25 / 22:50</strong></div>
                     <div class="info-value" style="font-size: 0.8rem; color: #64748b; margin-top: 4px; justify-content: center;">Estado: <strong>Normal / Estável</strong></div>
                 </div>
             </div>
@@ -413,16 +413,21 @@
             <div>
                 <section class="arduino-card">
                     <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.8rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">Escola Crescer (Medição em Tempo Real via Arduino)</p>
                     
                     <div class="temp-arduino" id="arduinoTemp">--°C</div>
                     
-                    <div class="details" style="gap: 1.5rem; margin-top: 0.5rem;">
+                    <!-- MÁXIMA E MÍNIMA DE HOJE -->
+                    <div style="font-size: 0.88rem; color: #475569; margin-bottom: 0.8rem;">
+                        Máx: <strong id="itamarajuTodayMax">--°C</strong> | Mín: <strong id="itamarajuTodayMin">--°C</strong>
+                    </div>
+                    
+                    <div class="details" style="gap: 1.5rem; margin-top: 0.2rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem;">
                         <div>Umidade: <strong id="arduinoHumidity">--%</strong></div>
                         <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
                     </div>
 
-                    <p id="arduinoStatus" style="font-size: 0.82rem; color: #dc2626; margin-top: 15px; font-weight: 600;">
+                    <p id="arduinoStatus" style="font-size: 0.82rem; color: #dc2626; margin-top: 12px; font-weight: 600;">
                         ⚠️ Arduino desconectado. Aguardando envio de dados...
                     </p>
                 </section>
@@ -472,6 +477,9 @@
         <div class="weather-card" id="currentWeather">
             <h2 id="cityName">Porto Seguro - Bahia</h2>
             <div class="temp" id="currentTemp">--°C</div>
+            <div style="font-size: 0.9rem; color: #475569; margin-top: -0.2rem; margin-bottom: 0.3rem;">
+                Máx: <strong id="searchTodayMax">--°C</strong> | Mín: <strong id="searchTodayMin">--°C</strong>
+            </div>
             <p id="currentCondition" style="color: #64748b; font-size: 0.9rem;">Carregando...</p>
             <div class="details">
                 <div>Umidade: <strong id="currentHumidity">--%</strong></div>
@@ -594,6 +602,12 @@
                 const data = await res.json();
                 
                 if (data.daily) {
+                    // Exibir máxima e mínima de hoje no painel do Arduino
+                    if (data.daily.temperature_2m_max && data.daily.temperature_2m_min) {
+                        document.getElementById('itamarajuTodayMax').innerText = `${Math.round(data.daily.temperature_2m_max[0])}°C`;
+                        document.getElementById('itamarajuTodayMin').innerText = `${Math.round(data.daily.temperature_2m_min[0])}°C`;
+                    }
+
                     renderizarPrevisao(data.daily, 'itamarajuForecastContainer');
 
                     if (data.daily.sunrise && data.daily.sunset) {
@@ -657,10 +671,10 @@
             if (diasParaCheia === 0) {
                 textoCheia = "🌕 É Lua Cheia hoje!";
             } else if (diasParaCheia > 0) {
-                textoCheia = `Faltam ${diasParaCheia} dias para a Lua Cheia`;
+                textoCheia = `Faltam ${diasParaCheia} dias para a Cheia`;
             } else {
                 let diasProximaCheia = Math.round(29.53 - phaseVal);
-                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Lua Cheia`;
+                textoCheia = `Faltam ${diasProximaCheia} dias para a próxima Cheia`;
             }
 
             document.getElementById('itamarajuMoonPhase').innerText = fases[phaseIndex].nome;
@@ -753,6 +767,11 @@
                     if (weatherData.daily && weatherData.daily.sunrise) {
                         document.getElementById('searchSunrise').innerText = weatherData.daily.sunrise[0].split('T')[1];
                         document.getElementById('searchSunset').innerText = weatherData.daily.sunset[0].split('T')[1];
+                    }
+
+                    if (weatherData.daily && weatherData.daily.temperature_2m_max && weatherData.daily.temperature_2m_min) {
+                        document.getElementById('searchTodayMax').innerText = `${Math.round(weatherData.daily.temperature_2m_max[0])}°C`;
+                        document.getElementById('searchTodayMin').innerText = `${Math.round(weatherData.daily.temperature_2m_min[0])}°C`;
                     }
 
                     document.getElementById('searchCityForecastName').innerText = loc.name;

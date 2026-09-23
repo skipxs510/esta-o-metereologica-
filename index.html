@@ -8,17 +8,17 @@
     <!-- Ícone da Aba do Navegador (Favicon) -->
     <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- 1. Importação da Biblioteca do Supabase -->
+    <!-- Importação do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --primary-color: #9D00FF; /* Roxo */
+            --primary-color: #27408B; /* RoyalBlue4 */
             --secondary-color: #000000; /* Preto */
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #333333;
-            --arduino-card-bg: #f3e8ff; /* Roxo claro em destaque */
+            --arduino-card-bg: #f3e8ff; /* Roxo claro para o destaque local */
         }
 
         * {
@@ -51,19 +51,18 @@
             gap: 10px;
         }
 
-        /* ESTILO DA LOGO NO CABEÇALHO */
         .header-logo {
             height: 50px;
             width: auto;
-            border-radius: 50%; /* Mantém o formato circular da imagem */
+            border-radius: 50%;
             background-color: white;
             padding: 2px;
         }
 
-        /* BANNER DE ALERTA - COR AMARELO CLARO COM TEXTO ESCURO */
+        /* BANNER DE ALERTA - AMARELO CLARO */
         .alert-banner {
-            background-color: #fff3cd; /* Amarelo claro suave */
-            color: #856404;            /* Texto num tom marrom/dourado escuro para dar leitura */
+            background-color: #fff3cd;
+            color: #856404;
             border-bottom: 1px solid #ffeeba;
             text-align: center;
             padding: 0.75rem;
@@ -77,7 +76,7 @@
             padding: 0 1rem;
         }
 
-        /* CARD DA ESTAÇÃO ARDUINO EM DESTAQUE */
+        /* CARD FIXO DE ITAMARAJU / ARDUINO */
         .arduino-card {
             background: var(--arduino-card-bg);
             border: 2px solid var(--primary-color);
@@ -123,7 +122,7 @@
         }
 
         .search-box button:hover {
-            background-color: #002244;
+            background-color: #7b00c7;
         }
 
         .weather-card {
@@ -144,7 +143,7 @@
             font-size: 3.5rem;
             font-weight: bold;
             color: var(--secondary-color);
-            margin: 1rem 0;
+            margin: 0.5rem 0;
         }
 
         .details {
@@ -197,7 +196,6 @@
 
     <header>
         <h1>Site meteorológico Escola Crescer</h1>
-        <!-- LOGO NO CANTO SUPERIOR DIREITO -->
         <img src="logo.png" alt="Logo Escola Crescer" class="header-logo">
     </header>
 
@@ -206,24 +204,31 @@
     </div>
 
     <main>
-        <!-- SEÇÃO EM DESTAQUE: DADOS DO ARDUINO (SUPABASE) -->
+        <!-- 1. CIDADE FIXA: ITAMARAJU / ARDUINO -->
         <section class="arduino-card">
-            <h2>📡 Estação Meteorológica Local (Escola Crescer)</h2>
-            <p style="font-size: 0.9rem; color: #666;">Dados coletados em tempo real via Arduino</p>
+            <h2>📍 Estação Meteorológica Local - Itamaraju/BA</h2>
+            <p style="font-size: 0.9rem; color: #666;">Escola Crescer (Medição em Tempo Real)</p>
             
             <div class="temp" id="arduinoTemp">--°C</div>
-            <p id="arduinoStatus" style="font-size: 0.8rem; color: #777; margin-top: 15px;">Aguardando leitura do Supabase...</p>
+            
+            <div class="details">
+                <div>Umidade: <strong id="arduinoHumidity">--%</strong></div>
+                <div>Vento: <strong id="arduinoWind">-- km/h</strong></div>
+            </div>
+
+            <p id="arduinoStatus" style="font-size: 0.8rem; color: #777; margin-top: 15px;">Atualizando dados...</p>
         </section>
 
-        <!-- PESQUISA DE OUTRAS CIDADES (API OPEN-METEO) -->
+        <!-- 2. CAMPO DE PESQUISA PARA OUTRAS CIDADES -->
         <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Consultar Outras Cidades</h3>
         <div class="search-box">
-            <input type="text" id="cityInput" placeholder="Digite o nome da cidade (Ex: São Paulo, Rio de Janeiro)..." value="São Paulo">
+            <input type="text" id="cityInput" placeholder="Digite uma cidade (Ex: Salvador, Teixeira de Freitas, Rio de Janeiro)..." value="Salvador">
             <button onclick="getWeatherData()">Pesquisar</button>
         </div>
 
         <div id="errorArea" class="error-msg" style="text-align: center;"></div>
 
+        <!-- RESULTADO DA CIDADE PESQUISADA -->
         <div class="weather-card" id="currentWeather">
             <h2 id="cityName">Carregando...</h2>
             <div class="temp" id="currentTemp">--°C</div>
@@ -236,7 +241,7 @@
 
         <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Previsão para os Próximos Dias</h3>
         <div class="forecast-container" id="forecastContainer">
-            <!-- Previsões futuras entram aqui via JavaScript -->
+            <!-- Previsão dos próximos dias criada dinamicamente -->
         </div>
     </main>
 
@@ -246,50 +251,58 @@
 
     <script>
         // ==========================================
-        // 1. CONFIGURAÇÃO E INTEGRAÇÃO COM SUPABASE
+        // CONFIGURAÇÃO SUPABASE (ARDUINO ITAMARAJU)
         // ==========================================
         const SUPABASE_URL = 'https://klnuljixtmixfrzgpzmv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_06gMLuRxhQh4Z_z6jb1Bdg_dWXSx3Du';
-        
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function buscarDadosArduino() {
+        // Busca dados do Arduino / Supabase para Itamaraju
+        async function buscarDadosItamaraju() {
             try {
-                // Consulta a tabela 'Leituras' ordenando por ID para pegar a última medição
                 const { data, error } = await _supabase
                     .from('Leituras')
                     .select('*')
                     .order('id', { ascending: false })
                     .limit(1);
 
-                if (error) {
-                    console.error('Erro no Supabase:', error);
-                    document.getElementById('arduinoStatus').innerText = 'Erro ao conectar ao Supabase.';
-                    return;
-                }
-
-                if (data && data.length > 0) {
+                if (!error && data && data.length > 0) {
                     const leitura = data[0];
+                    if (leitura.temperatura !== undefined) document.getElementById('arduinoTemp').innerText = `${leitura.temperatura}°C`;
+                    if (leitura.umidade !== undefined) document.getElementById('arduinoHumidity').innerText = `${leitura.umidade}%`;
+                    if (leitura.vento !== undefined) document.getElementById('arduinoWind').innerText = `${leitura.vento} km/h`;
                     
-                    // Exibe o valor da coluna 'temperatura'
-                    if (leitura.temperatura !== undefined && leitura.temperatura !== null) {
-                        document.getElementById('arduinoTemp').innerText = `${leitura.temperatura}°C`;
-                    } else {
-                        document.getElementById('arduinoTemp').innerText = `--°C`;
-                    }
-
                     const horaAtual = new Date().toLocaleTimeString('pt-BR');
-                    document.getElementById('arduinoStatus').innerText = `Última atualização: ${horaAtual}`;
+                    document.getElementById('arduinoStatus').innerText = `Última atualização do Arduino: ${horaAtual}`;
                 } else {
-                    document.getElementById('arduinoStatus').innerText = 'Nenhum dado encontrado na tabela Leituras.';
+                    // Caso o Arduino ainda não envie umidade/vento, busca na API Pública para completar Itamaraju
+                    buscarItamarajuOpenMeteo();
                 }
             } catch (err) {
-                console.error('Erro inesperado:', err);
+                buscarItamarajuOpenMeteo();
+            }
+        }
+
+        // Caso o Arduino forneça apenas a temperatura, a API traz os dados meteorológicos padrão de Itamaraju
+        async function buscarItamarajuOpenMeteo() {
+            try {
+                // Coordenadas fixas de Itamaraju - BA
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=-17.0397&longitude=-39.5311&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto`);
+                const data = await res.json();
+                
+                if (document.getElementById('arduinoTemp').innerText === '--°C') {
+                    document.getElementById('arduinoTemp').innerText = `${data.current.temperature_2m}°C`;
+                }
+                document.getElementById('arduinoHumidity').innerText = `${data.current.relative_humidity_2m}%`;
+                document.getElementById('arduinoWind').innerText = `${data.current.wind_speed_10m} km/h`;
+                document.getElementById('arduinoStatus').innerText = `Dados integrados Open-Meteo (Itamaraju)`;
+            } catch (e) {
+                console.error("Erro ao buscar dados locais de Itamaraju:", e);
             }
         }
 
         // ==========================================
-        // 2. BUSCA DE DADOS DE CIDADES (OPEN-METEO)
+        // BUSCA DE OUTRAS CIDADES (OPEN-METEO)
         // ==========================================
         async function getWeatherData() {
             const cityName = document.getElementById('cityInput').value.trim();
@@ -302,6 +315,7 @@
             }
 
             try {
+                // Busca a geolocalização (latitude/longitude) da cidade pesquisada
                 const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=pt&format=json`);
                 const geoData = await geoResponse.json();
 
@@ -313,15 +327,18 @@
                 const location = geoData.results[0];
                 const { latitude, longitude, name, admin1, country } = location;
 
+                // Consulta a previsão do tempo com temperatura, umidade e vento atuais
                 const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,time&timezone=auto`);
                 const weatherData = await weatherResponse.json();
 
+                // Exibe os dados atuais da cidade pesquisada
                 document.getElementById('cityName').innerText = `${name} - ${admin1 || ''} (${country || ''})`;
                 document.getElementById('currentTemp').innerText = `${weatherData.current.temperature_2m}°C`;
                 document.getElementById('currentHumidity').innerText = `${weatherData.current.relative_humidity_2m}%`;
                 document.getElementById('currentWind').innerText = `${weatherData.current.wind_speed_10m} km/h`;
                 document.getElementById('currentCondition').innerText = getWeatherDescription(weatherData.current.weather_code);
 
+                // Exibe a previsão dos próximos 5 dias
                 const forecastContainer = document.getElementById('forecastContainer');
                 forecastContainer.innerHTML = '';
 
@@ -345,10 +362,11 @@
 
             } catch (error) {
                 console.error(error);
-                errorArea.innerText = 'Erro ao buscar dados de meteorologia. Verifique sua conexão.';
+                errorArea.innerText = 'Erro ao buscar dados meteorológicos. Verifique sua conexão.';
             }
         }
 
+        // Descrição do código meteorológico
         function getWeatherDescription(code) {
             const weatherCodes = {
                 0: 'Céu limpo',
@@ -365,13 +383,13 @@
             return weatherCodes[code] || 'Condição estável';
         }
 
-        // Executa ao carregar a página
+        // Executado assim que a página carrega
         window.onload = () => {
-            buscarDadosArduino(); // Busca no Supabase
-            getWeatherData();     // Busca na API pública
+            buscarDadosItamaraju(); // Carrega Itamaraju fixo
+            getWeatherData();        // Carrega a cidade inicial da busca (Salvador)
 
-            // Atualiza o card do Supabase a cada 5 segundos automaticamente
-            setInterval(buscarDadosArduino, 5000);
+            // Atualiza os dados de Itamaraju automaticamente a cada 5 segundos
+            setInterval(buscarDadosItamaraju, 5000);
         };
     </script>
 </body>
